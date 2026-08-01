@@ -1059,6 +1059,24 @@
       background: var(--panel-2);
       color: var(--ink-dim);
     }
+    .opp-score[data-bucket="pending"] {
+      background: var(--warn-bg);
+      color: var(--warn-ink);
+      border-color: var(--warn-border);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+    .opp.is-pending {
+      background: linear-gradient(90deg, rgba(31, 122, 110, 0.06), transparent 28%);
+    }
+    html[data-theme="dark"] .opp.is-pending {
+      background: linear-gradient(90deg, rgba(61, 159, 144, 0.12), transparent 28%);
+    }
+    .opp-meta .shared-by {
+      color: var(--accent);
+      font-weight: 650;
+    }
 
     .opp-main { min-width: 0; }
     .opp-top {
@@ -1244,36 +1262,52 @@
     .rating-row {
       display: flex;
       align-items: center;
-      gap: 4px;
-      flex-wrap: nowrap;
+      gap: 6px;
+      flex-wrap: wrap;
     }
     .rating-row .rating-label { display: none; }
     .stars {
       display: inline-flex;
       gap: 0;
+      padding: 2px 0;
+      border-radius: 4px;
     }
     .stars button {
       border: none;
       background: transparent;
-      padding: 0 1px;
+      padding: 2px 3px;
       cursor: pointer;
-      font-size: 15px;
+      font-size: 16px;
       line-height: 1;
       color: var(--star-empty);
+      transition: color 0.08s ease, transform 0.08s ease;
     }
     .stars button.on { color: var(--star); }
-    .stars button:hover { color: var(--accent-hover); }
-    .rating-clear {
-      border: none;
-      background: transparent;
-      color: var(--ink-dim);
-      font-size: 10px;
-      cursor: pointer;
-      text-decoration: underline;
-      padding: 0 2px;
-      display: inline;
+    .stars.is-previewing button.on { color: var(--star-empty); }
+    .stars button.preview { color: var(--star); }
+    .stars button:hover { transform: scale(1.12); }
+    .stars button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+      border-radius: 3px;
     }
-    .rating-clear:hover { color: var(--ink-muted); }
+    .rating-clear {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink-muted);
+      font-size: 10px;
+      font-weight: 650;
+      cursor: pointer;
+      padding: 1px 6px;
+      border-radius: 4px;
+      line-height: 1.3;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .rating-clear:hover {
+      color: var(--ink);
+      border-color: var(--ink-dim);
+    }
     .rating-value { display: none; }
     .rating-note-btn {
       border: 1px solid var(--line);
@@ -1386,6 +1420,29 @@
       font-size: 13px;
       color: var(--ink-muted);
     }
+    .addr-suggest-watch {
+      padding: 10px 12px 12px;
+      border-top: 1px solid var(--line);
+    }
+    .addr-suggest-watch:first-child { border-top: 0; }
+    .addr-suggest-watch .watch-addr {
+      font-size: 13px;
+      font-weight: 650;
+      color: var(--ink);
+      margin: 0 0 4px;
+    }
+    .addr-suggest-watch .hint {
+      margin: 0 0 10px;
+      font-size: 11px;
+      color: var(--ink-muted);
+      line-height: 1.4;
+    }
+    .addr-suggest-watch-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .addr-suggest-watch-actions .btn { font-size: 12px; padding: 6px 10px; }
     .field-hint {
       margin: 6px 0 0;
       font-size: 12px;
@@ -1718,6 +1775,114 @@
       border-color: var(--warn-border);
       color: var(--warn-ink);
     }
+    .analyze-paths {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 720px) {
+      .analyze-paths { grid-template-columns: 1fr; }
+    }
+    .analyze-path {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--ink-muted);
+      line-height: 1.45;
+    }
+    .analyze-path strong {
+      display: block;
+      color: var(--ink);
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    .analyze-path.is-share {
+      border-color: rgba(31, 122, 110, 0.35);
+      background: var(--accent-soft);
+    }
+    html[data-theme="dark"] .analyze-path.is-share {
+      border-color: rgba(61, 159, 144, 0.4);
+    }
+    .analyze-path .path-step {
+      display: block;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--ink-dim);
+    }
+    .addr-status {
+      margin: 10px 0 0;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      font-size: 13px;
+      color: var(--ink-muted);
+      line-height: 1.45;
+    }
+    .addr-status[data-state="empty"] {
+      border-style: dashed;
+    }
+    .addr-status[data-state="inventory"] {
+      border-color: rgba(45, 138, 94, 0.35);
+      background: rgba(45, 138, 94, 0.1);
+      color: var(--ink);
+    }
+    .addr-status[data-state="pending"] {
+      border-color: var(--warn-border);
+      background: var(--warn-bg);
+      color: var(--warn-ink);
+    }
+    .addr-status[data-state="watch"] {
+      border-color: rgba(31, 122, 110, 0.4);
+      background: var(--accent-soft);
+      color: var(--ink);
+    }
+    .addr-status[data-state="partial"] {
+      color: var(--ink-muted);
+    }
+    .addr-status .status-title {
+      display: block;
+      font-weight: 700;
+      color: inherit;
+      margin-bottom: 2px;
+    }
+    .addr-status .status-actions {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .addr-status .try-link {
+      background: none;
+      border: 0;
+      padding: 0;
+      color: var(--accent);
+      font: inherit;
+      font-weight: 650;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .analyze-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin: 16px 0 0;
+    }
+    .analyze-actions .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .analyze-actions .action-hint {
+      flex: 1 1 180px;
+      font-size: 12px;
+      color: var(--ink-dim);
+      margin: 0;
+    }
     .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
     details.overrides {
       background: var(--panel);
@@ -1874,6 +2039,139 @@
       gap: 16px;
       align-items: start;
     }
+
+    /* Market request intake */
+    .market-form {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px 18px 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .market-form .form-section {
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .market-form .form-section:last-of-type {
+      border-bottom: 0;
+      padding-bottom: 0;
+      margin-bottom: 14px;
+    }
+    .market-form .section-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin-bottom: 8px;
+    }
+    .choice-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .choice-pill {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      color: var(--ink-muted);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 650;
+      cursor: pointer;
+      line-height: 1.3;
+    }
+    .choice-pill:hover { border-color: var(--accent); color: var(--accent); }
+    .choice-pill[aria-pressed="true"],
+    .choice-pill.is-on {
+      background: var(--accent-soft);
+      border-color: rgba(31, 122, 110, 0.4);
+      color: var(--accent);
+    }
+    .choice-pill input { position: absolute; opacity: 0; pointer-events: none; }
+    .buybox-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    @media (max-width: 720px) {
+      .buybox-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .priority-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .priority-chip {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink-muted);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    .priority-chip.is-on {
+      background: var(--accent-soft);
+      border-color: rgba(31, 122, 110, 0.4);
+      color: var(--accent);
+    }
+    .str-only[hidden] { display: none !important; }
+    .expand-only[hidden] { display: none !important; }
+    .market-pending-h {
+      margin: 0 0 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .market-pending-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    .market-pending-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px 16px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      align-items: start;
+    }
+    .market-pending-item:last-child { border-bottom: 0; }
+    .market-pending-item .mp-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .market-pending-item .mp-meta {
+      margin: 3px 0 0;
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+    .market-pending-item .mp-status {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--warn-ink);
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      border-radius: 6px;
+      padding: 3px 8px;
+      white-space: nowrap;
+    }
+
     .artifacts-folders {
       background: var(--panel);
       border: 1px solid var(--line);
@@ -2027,6 +2325,10 @@
           <svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15l3-4 3 2 4-6"/></svg>
           Analyze
         </button>
+        <button type="button" class="nav-btn" data-nav="request-market">
+          <svg viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          Request a market
+        </button>
         <button type="button" class="nav-btn" data-nav="artifacts">
           <svg viewBox="0 0 24 24"><path d="M4 6h7v5H4zM13 6h7v5h-7zM4 13h7v5H4zM13 13h7v5h-7z"/></svg>
           My Artifacts
@@ -2037,6 +2339,7 @@
           <button type="button" class="recent-item" data-goto-opps='{"digest":"denver-2026-07-31"}'>Denver digest — Jul 31</button>
           <button type="button" class="recent-item" data-goto-opps='{"digest":"arkansas-2026-07-31"}'>NW Arkansas — Jul 31</button>
           <button type="button" class="recent-item" data-nav="analyze">Analyze deal</button>
+          <button type="button" class="recent-item" data-nav="request-market">Request a market</button>
           <button type="button" class="recent-item" data-nav="opportunities" data-opps-all="1">All opportunities</button>
         </div>
 
@@ -2113,6 +2416,29 @@
             <p class="feed-section-label">All activity</p>
 
             <div class="feed-day"><span>Friday, Jul 31 · Today</span></div>
+
+            <article class="feed-card" id="feed-shared-sample">
+              <div class="feed-card-title-row">
+                <p class="feed-title">Shared property — 1847 SW A Street</p>
+              </div>
+              <div class="feed-meta">
+                <span class="feed-date">7/31/2026</span>
+                <span class="pill pill-important">Shared by Geoff</span>
+              </div>
+              <p class="feed-summary">Not in inventory yet · queued for tonight’s refresh · then scores in Opportunities</p>
+              <hr class="feed-divider" />
+              <p class="feed-body collapsed" data-feed-body>
+                Geoff pasted an address that wasn’t on the desk. Prairie Peak will enrich it on the next daily refresh (beds, baths, price, photos) and add a scored Opportunities row. Analyze is still available now if you want a quick RentCast memo.
+              </p>
+              <button type="button" class="feed-more" data-feed-more>See more</button>
+              <div class="feed-actions">
+                <button type="button" class="feed-chat" data-goto-opps='{"shared":"1"}'>
+                  <svg viewBox="0 0 24 24"><path d="M5 6h14v10H9l-4 3V6z"/></svg>
+                  View shared
+                </button>
+                <button type="button" class="feed-link" data-analyze="1847 SW A Street, Bentonville AR">Analyze now</button>
+              </div>
+            </article>
 
             <article class="feed-card">
               <div class="feed-card-title-row">
@@ -2237,7 +2563,7 @@
             </div>
 
             <div class="tag-legend" title="How to read a row">
-              <span><strong>Score</strong> — Strong ≥80 · Interesting 55–79 · Pass &lt;55</span>
+              <span><strong>Score</strong> — Strong ≥80 · Interesting 55–79 · Pass &lt;55 · <em>—</em> queued (shared)</span>
               <span><strong>Address</strong> — listing page in the live product (preview shows a note)</span>
               <span><strong>Meta</strong> — beds · source · market · flags</span>
               <span><strong>More</strong> — expands the one-line blurb</span>
@@ -2245,10 +2571,60 @@
 
             <div class="results-meta">
               <span id="results-count">Showing 0 properties</span>
-              <span>Default sort: score descending</span>
+              <span>Default sort: score descending · shared pending pinned top</span>
             </div>
 
             <div id="opp-list">
+              <article class="opp is-pending" data-id="shared-astreet" data-digest="" data-market="arkansas" data-source="shared" data-active="active" data-score="pending" data-beds="0" data-baths="0" data-price="0" data-location="Bentonville" data-composite="-1" data-date="2026-07-31" data-shared="1">
+                <div class="opp-row">
+                  <span class="opp-num" aria-hidden="true">1</span>
+                  <div class="opp-score" data-bucket="pending" title="Queued · waiting on tonight’s refresh">—</div>
+                  <div class="opp-main">
+                    <div class="opp-top">
+                      <div class="opp-addr-row"><p class="opp-addr">1847 SW A Street, Bentonville</p></div>
+                      <span class="opp-price">—</span>
+                    </div>
+                    <p class="opp-meta"><span class="shared-by">Shared by Geoff</span> · waiting on refresh · Arkansas · Jul 31</p>
+                    <div class="opp-exec-wrap">
+                      <p class="opp-exec">Not scored yet. Tonight’s refresh will pull listing data and drop this into the normal Opportunities stack.</p>
+                      <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
+                    </div>
+                  </div>
+                  <div class="opp-side">
+                    <div class="rating-block" data-rating-for="shared-astreet"></div>
+                    <div class="opp-actions">
+                      <button type="button" class="btn btn-primary" data-analyze="1847 SW A Street, Bentonville AR">Analyze</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="opp-note" data-note-for="shared-astreet"></div>
+              </article>
+
+              <article class="opp is-pending" data-id="shared-elm" data-digest="" data-market="arkansas" data-source="shared" data-active="active" data-score="pending" data-beds="0" data-baths="0" data-price="0" data-location="Rogers" data-composite="-1" data-date="2026-07-31" data-shared="1">
+                <div class="opp-row">
+                  <span class="opp-num" aria-hidden="true">2</span>
+                  <div class="opp-score" data-bucket="pending" title="Queued · waiting on tonight’s refresh">—</div>
+                  <div class="opp-main">
+                    <div class="opp-top">
+                      <div class="opp-addr-row"><p class="opp-addr">902 W Elm Street, Rogers</p></div>
+                      <span class="opp-price">—</span>
+                    </div>
+                    <p class="opp-meta"><span class="shared-by">Shared by Geoff</span> · waiting on refresh · Arkansas · Jul 31</p>
+                    <div class="opp-exec-wrap">
+                      <p class="opp-exec">Second address Geoff shared this morning — same path: enrich overnight, then Analyze with real scores.</p>
+                      <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
+                    </div>
+                  </div>
+                  <div class="opp-side">
+                    <div class="rating-block" data-rating-for="shared-elm"></div>
+                    <div class="opp-actions">
+                      <button type="button" class="btn btn-primary" data-analyze="902 W Elm Street, Rogers AR">Analyze</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="opp-note" data-note-for="shared-elm"></div>
+              </article>
+
               <article class="opp" data-id="downing" data-digest="denver-2026-07-31" data-market="denver" data-source="mls" data-active="active" data-score="interesting" data-beds="5" data-baths="4" data-price="850000" data-location="Centennial" data-composite="65" data-date="2026-07-31">
                 <div class="opp-row">
                   <span class="opp-num" aria-hidden="true">1</span>
@@ -2529,14 +2905,36 @@
           <!-- ANALYZE -->
           <section id="page-analyze" class="page wide">
             <p class="info-banner">Deep dive — same depth as a full deal memo you would save. Digests &amp; Opportunities stay triage-level; this report is the full write-up.</p>
+
+            <div class="analyze-paths" aria-label="How Analyze works">
+              <div class="analyze-path">
+                <strong>1 · Already on Opportunities</strong>
+                Start typing — pick from <em>Your inventory</em>, then run the memo.
+                <span class="path-step">Scored listings from digests &amp; scrapes</span>
+              </div>
+              <div class="analyze-path is-share">
+                <strong>2 · New address we don’t track</strong>
+                Paste any street address → <strong>Add to Opportunities</strong> (queues tonight’s refresh). You can still run a memo now.
+                <span class="path-step">No texting Grant — share it on the desk here</span>
+              </div>
+            </div>
+
             <div class="field">
               <label for="analyze-address">Address</label>
               <div class="addr-combo">
                 <input id="analyze-address" type="text" autocomplete="off" spellcheck="false"
-                  placeholder="Start typing an address…" aria-autocomplete="list" aria-controls="addr-suggest" aria-expanded="false" />
+                  placeholder="Paste or type a full address — e.g. 1200 SE 8th St, Bentonville AR"
+                  aria-autocomplete="list" aria-controls="addr-suggest" aria-expanded="false"
+                  aria-describedby="addr-status" />
                 <div id="addr-suggest" class="addr-suggest" role="listbox" hidden></div>
               </div>
-              <p class="field-hint">Suggestions from your inventory first, then address lookup. Or copy an address from Opportunities and paste here.</p>
+              <div id="addr-status" class="addr-status" data-state="empty" role="status">
+                <span class="status-title">Waiting for an address</span>
+                Try an inventory pick from the dropdown, or paste one we don’t have yet.
+                <span class="status-actions">
+                  <button type="button" class="try-link" id="btn-try-unknown" data-try-addr="1200 SE 8th St, Bentonville AR">Try a new address (demo)</button>
+                </span>
+              </div>
             </div>
             <details class="overrides" id="overrides-panel">
               <summary>Fill in missing listing data</summary>
@@ -2566,7 +2964,11 @@
                 </div>
               </div>
             </details>
-            <button type="button" class="btn btn-primary" id="btn-run-analyze">Run analysis</button>
+            <div class="analyze-actions">
+              <button type="button" class="btn btn-primary" id="btn-add-opp" disabled title="Queues this address for tonight’s refresh">Add to Opportunities</button>
+              <button type="button" class="btn btn-ghost" id="btn-run-analyze">Run analysis</button>
+              <p class="action-hint" id="analyze-action-hint">Add puts it on the desk · Run opens the sample memo now</p>
+            </div>
             <div id="needs-price" class="info-banner warn" style="display:none;margin-top:16px">Enter an ask or bid price above, then run again. Auctions often need this because there is no MLS ask.</div>
 
             <div id="report-panel" class="report" style="display:none" hidden>
@@ -2703,6 +3105,125 @@
             </div>
           </section>
 
+          <!-- REQUEST A MARKET -->
+          <section id="page-request-market" class="page wide">
+            <p class="info-banner">Tell us where to look and how you invest. We’ll wire Redfin IDs and scoring behind the scenes — then it shows up in daily digests and Opportunities.</p>
+
+            <form class="market-form" id="market-request-form" novalidate>
+              <div class="form-section">
+                <span class="section-label">What do you need?</span>
+                <div class="choice-row" role="group" aria-label="Request type">
+                  <button type="button" class="choice-pill is-on" data-mr-type="new" aria-pressed="true">New metro</button>
+                  <button type="button" class="choice-pill" data-mr-type="expand" aria-pressed="false">Expand a market we already run</button>
+                </div>
+                <div class="field expand-only" id="mr-expand-wrap" hidden style="margin-top:12px;margin-bottom:0">
+                  <label for="mr-expand-market">Which desk?</label>
+                  <select id="mr-expand-market">
+                    <option value="denver">Denver South</option>
+                    <option value="arkansas" selected>NW Arkansas</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <span class="section-label">Where</span>
+                <div class="field" style="margin-bottom:0">
+                  <label for="mr-area" id="mr-area-label">City or area</label>
+                  <input id="mr-area" type="text" required autocomplete="off"
+                    placeholder="e.g. Boise, ID or Asheville, NC" />
+                  <p class="field-hint" id="mr-area-hint">Name the metro or city you want covered. Include the state.</p>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <span class="section-label">Investment strategy</span>
+                <div class="choice-row" role="group" aria-label="Primary strategy">
+                  <button type="button" class="choice-pill is-on" data-mr-strategy="str" aria-pressed="true">Short-term (STR)</button>
+                  <button type="button" class="choice-pill" data-mr-strategy="ltr" aria-pressed="false">Long-term (LTR)</button>
+                  <button type="button" class="choice-pill" data-mr-strategy="mtr" aria-pressed="false">Medium-term (MTR)</button>
+                </div>
+                <label class="field-hint" style="display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer">
+                  <input type="checkbox" id="mr-backup" />
+                  Also consider a backup strategy if regs or cash flow change
+                </label>
+                <div class="field" id="mr-backup-wrap" hidden style="margin-top:10px;margin-bottom:0">
+                  <label for="mr-backup-strategy">Backup</label>
+                  <select id="mr-backup-strategy">
+                    <option value="mtr">Medium-term (MTR)</option>
+                    <option value="ltr">Long-term (LTR)</option>
+                    <option value="str">Short-term (STR)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <span class="section-label">Buy box</span>
+                <div class="buybox-grid">
+                  <div class="field" style="margin-bottom:0">
+                    <label for="mr-price-min">Min price ($)</label>
+                    <input id="mr-price-min" type="number" min="0" step="10000" value="200000" />
+                  </div>
+                  <div class="field" style="margin-bottom:0">
+                    <label for="mr-price-max">Max price ($)</label>
+                    <input id="mr-price-max" type="number" min="0" step="10000" value="600000" />
+                  </div>
+                  <div class="field" style="margin-bottom:0">
+                    <label for="mr-beds">Beds min</label>
+                    <input id="mr-beds" type="number" min="0" step="1" value="3" />
+                  </div>
+                  <div class="field" style="margin-bottom:0">
+                    <label for="mr-baths">Baths min</label>
+                    <input id="mr-baths" type="number" min="0" step="0.5" value="2" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <span class="section-label">Financing</span>
+                <div class="choice-row" role="group" aria-label="Financing">
+                  <button type="button" class="choice-pill" data-mr-financing="cash" aria-pressed="false">Cash</button>
+                  <button type="button" class="choice-pill" data-mr-financing="financed" aria-pressed="false">Financed</button>
+                  <button type="button" class="choice-pill is-on" data-mr-financing="either" aria-pressed="true">Either</button>
+                </div>
+              </div>
+
+              <div class="form-section str-only" id="mr-str-priorities">
+                <span class="section-label">Guest priorities (STR)</span>
+                <div class="priority-chips" role="group" aria-label="Guest priorities">
+                  <button type="button" class="priority-chip" data-mr-priority="trails">Trails</button>
+                  <button type="button" class="priority-chip" data-mr-priority="lake">Lake</button>
+                  <button type="button" class="priority-chip" data-mr-priority="downtown">Downtown / amenities</button>
+                  <button type="button" class="priority-chip" data-mr-priority="other">Other</button>
+                </div>
+                <p class="field-hint">Optional — helps us score guest appeal in this market.</p>
+              </div>
+
+              <div class="form-section">
+                <span class="section-label">Note <span style="font-weight:500;text-transform:none;letter-spacing:0">(optional)</span></span>
+                <div class="field" style="margin-bottom:0">
+                  <label for="mr-note" class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Note</label>
+                  <textarea id="mr-note" rows="3" placeholder="Anything else — why this market, comps you know, cities to include…"></textarea>
+                </div>
+              </div>
+
+              <div class="analyze-actions" style="margin-top:0">
+                <button type="submit" class="btn btn-primary" id="btn-mr-submit">Submit request</button>
+                <p class="action-hint">We’ll email Grant and queue setup — not live on Opportunities until wired.</p>
+              </div>
+            </form>
+
+            <h3 class="market-pending-h">Pending requests</h3>
+            <ul class="market-pending-list" id="market-pending-list">
+              <li class="market-pending-item" data-mr-id="sample-centerton">
+                <div>
+                  <p class="mp-title">Centerton, AR</p>
+                  <p class="mp-meta">Expand · NW Arkansas · STR · Cash · Geoff · Jul 28</p>
+                </div>
+                <span class="mp-status">Queued for setup</span>
+              </li>
+            </ul>
+          </section>
+
           <!-- MY ARTIFACTS -->
           <section id="page-artifacts" class="page wide">
             <p class="info-banner">Saved deal analyses (and later other outputs). Organize into folders — Geoff &amp; Jo own this library.</p>
@@ -2808,6 +3329,8 @@
   </div>
   <div class="toast-fixed" id="artifact-toast">Saved to My Artifacts</div>
   <div class="toast-fixed" id="copy-toast">Address copied</div>
+  <div class="toast-fixed" id="share-toast">Queued for tonight’s refresh</div>
+  <div class="toast-fixed" id="market-toast">Market request queued</div>
 
   <script>
     (function () {
@@ -2838,6 +3361,7 @@
       var btnNavToggle = document.getElementById("btn-nav-toggle");
       var pendingNeedsPrice = false;
       var activeDigest = null;
+      var activeSharedOnly = false;
 
       function showToast(id, msg) {
         var toast = document.getElementById(id);
@@ -2967,19 +3491,30 @@
         { address: "8900 E Orchard Rd, Greenwood Village CO", hint: "Address lookup · Denver metro", source: "lookup" },
       ];
 
+      function normalizeAddr(a) {
+        return String(a || "")
+          .toLowerCase()
+          .replace(/[.,#]/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+
       function inventoryAddresses() {
         var seen = {};
         var out = [];
         document.querySelectorAll("#opp-list [data-analyze]").forEach(function (btn) {
           var a = btn.getAttribute("data-analyze");
-          if (!a || seen[a]) return;
-          seen[a] = true;
+          if (!a || seen[normalizeAddr(a)]) return;
+          seen[normalizeAddr(a)] = true;
           var card = btn.closest(".opp");
           var market = card ? card.getAttribute("data-market") : "";
           var loc = card ? card.getAttribute("data-location") : "";
+          var pending = card && card.getAttribute("data-shared") === "1";
           out.push({
             address: a,
-            hint: "In inventory" + (loc ? " · " + loc : "") + (market === "arkansas" ? " · NWA" : market === "denver" ? " · Denver" : ""),
+            hint: pending
+              ? "Shared · waiting on refresh" + (loc ? " · " + loc : "")
+              : "In inventory" + (loc ? " · " + loc : "") + (market === "arkansas" ? " · NWA" : market === "denver" ? " · Denver" : ""),
             source: "inventory",
             needsPrice: btn.getAttribute("data-needs-price") === "1",
           });
@@ -2991,29 +3526,189 @@
         return inventoryAddresses().concat(LOOKUP_ADDRESSES);
       }
 
-      function filterAddressSuggestions(q) {
-        q = (q || "").trim().toLowerCase();
-        var all = allAddressSuggestions();
-        if (!q) return all.slice(0, 8);
-        var scored = all.map(function (item) {
-          var a = item.address.toLowerCase();
-          var score = a.indexOf(q);
-          if (score < 0) {
-            var tokens = q.split(/\s+/);
-            var ok = tokens.every(function (t) { return a.indexOf(t) >= 0; });
-            score = ok ? 50 : -1;
+      function looksLikeFullAddress(q) {
+        q = (q || "").trim();
+        if (q.length < 12) return false;
+        if (!/\d/.test(q)) return false;
+        return q.split(/\s+/).length >= 3;
+      }
+
+      function guessMarketFromAddress(addr) {
+        var a = normalizeAddr(addr);
+        if (/\b(co|colorado|denver|centennial|littleton|englewood|aurora)\b/.test(a)) return "denver";
+        return "arkansas";
+      }
+
+      function guessLocationFromAddress(addr, market) {
+        var a = normalizeAddr(addr);
+        var cities = market === "denver"
+          ? ["Centennial", "Littleton", "Englewood", "Denver", "Aurora", "Greenwood Village"]
+          : ["Bentonville", "Rogers", "Bella Vista", "Springdale", "Siloam Springs"];
+        for (var i = 0; i < cities.length; i++) {
+          if (a.indexOf(cities[i].toLowerCase()) >= 0) return cities[i];
+        }
+        return market === "denver" ? "Centennial" : "Bentonville";
+      }
+
+      function findOppByAddress(addr) {
+        var n = normalizeAddr(addr);
+        var found = null;
+        document.querySelectorAll("#opp-list [data-analyze]").forEach(function (btn) {
+          if (normalizeAddr(btn.getAttribute("data-analyze")) === n) {
+            found = btn.closest(".opp");
           }
-          return { item: item, score: score };
-        }).filter(function (x) { return x.score >= 0; });
-        scored.sort(function (a, b) {
-          if (a.item.source !== b.item.source) return a.item.source === "inventory" ? -1 : 1;
-          return a.score - b.score;
         });
-        return scored.map(function (x) { return x.item; }).slice(0, 8);
+        return found;
+      }
+
+      function classifyAddress(addr) {
+        addr = (addr || "").trim();
+        if (!addr) return { state: "empty" };
+        var card = findOppByAddress(addr);
+        if (card) {
+          if (card.getAttribute("data-shared") === "1") return { state: "pending", card: card };
+          return { state: "inventory", card: card };
+        }
+        if (looksLikeFullAddress(addr)) return { state: "watch" };
+        return { state: "partial" };
+      }
+
+      function setAnalyzeButtonRoles(mode) {
+        var addBtn = document.getElementById("btn-add-opp");
+        var runBtn = document.getElementById("btn-run-analyze");
+        if (!addBtn || !runBtn) return;
+        if (mode === "share") {
+          addBtn.className = "btn btn-primary";
+          runBtn.className = "btn btn-ghost";
+        } else {
+          addBtn.className = "btn btn-ghost";
+          runBtn.className = "btn btn-primary";
+        }
+      }
+
+      function updateAddrStatus() {
+        var el = document.getElementById("addr-status");
+        var addBtn = document.getElementById("btn-add-opp");
+        var hint = document.getElementById("analyze-action-hint");
+        if (!el || !addBtn) return;
+        var addr = addressInput.value.trim();
+        var info = classifyAddress(addr);
+        el.setAttribute("data-state", info.state);
+        addBtn.disabled = info.state !== "watch";
+
+        if (info.state === "empty") {
+          el.innerHTML =
+            '<span class="status-title">Waiting for an address</span>' +
+            "Pick from inventory suggestions, or paste one we don’t track yet." +
+            '<span class="status-actions">' +
+            '<button type="button" class="try-link" data-try-addr="1200 SE 8th St, Bentonville AR">Try a new address (demo)</button>' +
+            "</span>";
+          setAnalyzeButtonRoles("run");
+          if (hint) hint.textContent = "Paste a new address to enable Add to Opportunities";
+        } else if (info.state === "partial") {
+          el.innerHTML =
+            '<span class="status-title">Keep typing a full street address</span>' +
+            "Include street number, street name, and city — e.g. <em>1200 SE 8th St, Bentonville AR</em>.";
+          setAnalyzeButtonRoles("run");
+          if (hint) hint.textContent = "Need a fuller address before we can queue it";
+        } else if (info.state === "inventory") {
+          el.innerHTML =
+            '<span class="status-title">On Opportunities — ready to analyze</span>' +
+            escapeHtml(addr) + " is already in inventory. Run the deal memo below.";
+          setAnalyzeButtonRoles("run");
+          if (hint) hint.textContent = "Already on the desk — Run analysis opens the memo";
+        } else if (info.state === "pending") {
+          el.innerHTML =
+            '<span class="status-title">Queued — waiting on tonight’s refresh</span>' +
+            escapeHtml(addr) + " is on Opportunities as a shared pending row. You can still run a memo now." +
+            '<span class="status-actions">' +
+            '<button type="button" class="try-link" data-view-shared="1">View on Opportunities</button>' +
+            "</span>";
+          setAnalyzeButtonRoles("run");
+          if (hint) hint.textContent = "Already queued · Run analysis still works now";
+        } else {
+          el.innerHTML =
+            '<span class="status-title">Not in inventory yet</span>' +
+            "<strong>Add to Opportunities</strong> puts this on the desk for tonight’s refresh (scored row tomorrow). " +
+            "<strong>Run analysis</strong> opens a memo right now without waiting." +
+            '<span class="status-actions">' +
+            '<button type="button" class="btn btn-primary" data-status-add="1">Add to Opportunities</button>' +
+            '<button type="button" class="btn btn-ghost" data-status-run="1">Run analysis now</button>' +
+            "</span>";
+          setAnalyzeButtonRoles("share");
+          if (hint) hint.textContent = "Primary: add to the desk · or run a memo immediately";
+        }
+
+        el.querySelectorAll("[data-try-addr]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            pickAddress(btn.getAttribute("data-try-addr"), false);
+            openAddrSuggestFromInput();
+          });
+        });
+        el.querySelectorAll("[data-view-shared]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            openOppsFromFeed({ shared: "1" });
+          });
+        });
+        el.querySelectorAll("[data-status-add]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            addAddressToOpportunities(addressInput.value.trim());
+          });
+        });
+        el.querySelectorAll("[data-status-run]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            document.getElementById("btn-run-analyze").click();
+          });
+        });
+      }
+
+      function watchSuggestionForQuery(q) {
+        q = (q || "").trim();
+        if (!looksLikeFullAddress(q)) return null;
+        var n = normalizeAddr(q);
+        var known = allAddressSuggestions();
+        for (var i = 0; i < known.length; i++) {
+          if (normalizeAddr(known[i].address) === n) return null;
+        }
+        return {
+          address: q,
+          hint: "We’ll enrich this on tonight’s refresh · then it scores in Opportunities",
+          source: "watch",
+        };
+      }
+
+      function filterAddressSuggestions(q) {
+        q = (q || "").trim();
+        var qLower = q.toLowerCase();
+        var all = allAddressSuggestions();
+        var items;
+        if (!qLower) {
+          items = all.slice(0, 8);
+        } else {
+          var scored = all.map(function (item) {
+            var a = item.address.toLowerCase();
+            var score = a.indexOf(qLower);
+            if (score < 0) {
+              var tokens = qLower.split(/\s+/);
+              var ok = tokens.every(function (t) { return a.indexOf(t) >= 0; });
+              score = ok ? 50 : -1;
+            }
+            return { item: item, score: score };
+          }).filter(function (x) { return x.score >= 0; });
+          scored.sort(function (a, b) {
+            if (a.item.source !== b.item.source) return a.item.source === "inventory" ? -1 : 1;
+            return a.score - b.score;
+          });
+          items = scored.map(function (x) { return x.item; }).slice(0, 8);
+        }
+        var watch = watchSuggestionForQuery(q);
+        if (watch) items = [watch].concat(items);
+        return items;
       }
 
       var addrSuggest = document.getElementById("addr-suggest");
       var addrActiveIdx = -1;
+      var shareSeq = 0;
 
       function closeAddrSuggest() {
         addrSuggest.classList.remove("open");
@@ -3021,6 +3716,345 @@
         addrSuggest.innerHTML = "";
         addressInput.setAttribute("aria-expanded", "false");
         addrActiveIdx = -1;
+      }
+
+      function currentUserFirstName() {
+        var name = (document.getElementById("account-name") || {}).textContent || "Geoff";
+        return name.split(/\s+/)[0] || "Geoff";
+      }
+
+      function wireMarketRequestForm() {
+        var form = document.getElementById("market-request-form");
+        var pendingList = document.getElementById("market-pending-list");
+        if (!form || !pendingList) return;
+
+        var state = {
+          type: "new",
+          strategy: "str",
+          financing: "either",
+          priorities: {},
+        };
+
+        var STRATEGY_DEFAULTS = {
+          str: { min: 200000, max: 600000, beds: 3, baths: 2 },
+          ltr: { min: 500000, max: 1100000, beds: 3, baths: 3 },
+          mtr: { min: 250000, max: 700000, beds: 2, baths: 2 },
+        };
+
+        var STRATEGY_LABEL = { str: "STR", ltr: "LTR", mtr: "MTR" };
+        var FINANCE_LABEL = { cash: "Cash", financed: "Financed", either: "Either" };
+        var DESK_LABEL = { denver: "Denver South", arkansas: "NW Arkansas" };
+
+        function setChoiceGroup(attr, value) {
+          form.querySelectorAll("[" + attr + "]").forEach(function (btn) {
+            var on = btn.getAttribute(attr) === value;
+            btn.classList.toggle("is-on", on);
+            btn.setAttribute("aria-pressed", on ? "true" : "false");
+          });
+        }
+
+        function applyStrategyDefaults(strategy) {
+          var d = STRATEGY_DEFAULTS[strategy] || STRATEGY_DEFAULTS.str;
+          document.getElementById("mr-price-min").value = d.min;
+          document.getElementById("mr-price-max").value = d.max;
+          document.getElementById("mr-beds").value = d.beds;
+          document.getElementById("mr-baths").value = d.baths;
+        }
+
+        function syncTypeUi() {
+          var expand = state.type === "expand";
+          var wrap = document.getElementById("mr-expand-wrap");
+          if (wrap) wrap.hidden = !expand;
+          var area = document.getElementById("mr-area");
+          var hint = document.getElementById("mr-area-hint");
+          if (expand) {
+            area.placeholder = "e.g. Centerton, AR or Siloam Springs";
+            if (hint) hint.textContent = "City to add under the desk you selected.";
+          } else {
+            area.placeholder = "e.g. Boise, ID or Asheville, NC";
+            if (hint) hint.textContent = "Name the metro or city you want covered. Include the state.";
+          }
+        }
+
+        function syncStrategyUi() {
+          var strBlock = document.getElementById("mr-str-priorities");
+          if (strBlock) strBlock.hidden = state.strategy !== "str";
+        }
+
+        function syncBackupUi() {
+          var on = document.getElementById("mr-backup").checked;
+          document.getElementById("mr-backup-wrap").hidden = !on;
+        }
+
+        form.querySelectorAll("[data-mr-type]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            state.type = btn.getAttribute("data-mr-type");
+            setChoiceGroup("data-mr-type", state.type);
+            syncTypeUi();
+          });
+        });
+        form.querySelectorAll("[data-mr-strategy]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            state.strategy = btn.getAttribute("data-mr-strategy");
+            setChoiceGroup("data-mr-strategy", state.strategy);
+            applyStrategyDefaults(state.strategy);
+            syncStrategyUi();
+          });
+        });
+        form.querySelectorAll("[data-mr-financing]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            state.financing = btn.getAttribute("data-mr-financing");
+            setChoiceGroup("data-mr-financing", state.financing);
+          });
+        });
+        form.querySelectorAll("[data-mr-priority]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var key = btn.getAttribute("data-mr-priority");
+            var on = !btn.classList.contains("is-on");
+            btn.classList.toggle("is-on", on);
+            state.priorities[key] = on;
+          });
+        });
+        document.getElementById("mr-backup").addEventListener("change", syncBackupUi);
+
+        function money(n) {
+          return "$" + Number(n || 0).toLocaleString("en-US");
+        }
+
+        function prependFeedCard(summary) {
+          var feed = document.getElementById("page-feed");
+          if (!feed) return;
+          var day = feed.querySelector(".feed-day");
+          var article = document.createElement("article");
+          article.className = "feed-card";
+          article.innerHTML =
+            '<div class="feed-card-title-row"><p class="feed-title">Market request — ' + escapeHtml(summary.area) + "</p></div>" +
+            '<div class="feed-meta"><span class="feed-date">Today</span><span class="pill pill-important">Requested by ' +
+            escapeHtml(summary.who) + "</span></div>" +
+            "<p class=\"feed-summary\">" + escapeHtml(summary.line) + " · queued for setup</p>" +
+            '<hr class="feed-divider" />' +
+            '<p class="feed-body collapsed" data-feed-body>' +
+            escapeHtml(summary.who) + " asked to " + (summary.type === "expand" ? "expand " + summary.desk : "add a new metro") +
+            " with a " + summary.strategy + " buy box (" + summary.box + ", " + summary.financing + ")." +
+            (summary.note ? " Note: " + escapeHtml(summary.note) : "") +
+            "</p>" +
+            '<button type="button" class="feed-more" data-feed-more>See more</button>' +
+            '<div class="feed-actions">' +
+            '<button type="button" class="feed-chat" data-nav="request-market">View requests</button>' +
+            "</div>";
+          if (day && day.nextSibling) feed.insertBefore(article, day.nextSibling);
+          else feed.appendChild(article);
+          article.querySelectorAll("[data-feed-more]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              var body = article.querySelector("[data-feed-body]");
+              if (!body) return;
+              var collapsed = body.classList.toggle("collapsed");
+              btn.textContent = collapsed ? "See more" : "See less";
+            });
+          });
+          article.querySelectorAll("[data-nav]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              goNav(btn.getAttribute("data-nav"));
+            });
+          });
+        }
+
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          var area = document.getElementById("mr-area").value.trim();
+          if (!area) {
+            document.getElementById("mr-area").focus();
+            return;
+          }
+          var min = Number(document.getElementById("mr-price-min").value || 0);
+          var max = Number(document.getElementById("mr-price-max").value || 0);
+          if (max && min && max < min) {
+            showToast("market-toast", "Max price should be ≥ min price");
+            document.getElementById("mr-price-max").focus();
+            return;
+          }
+          var who = currentUserFirstName();
+          var desk = DESK_LABEL[document.getElementById("mr-expand-market").value] || "NW Arkansas";
+          var strategy = STRATEGY_LABEL[state.strategy] || "STR";
+          var financing = FINANCE_LABEL[state.financing] || "Either";
+          var beds = document.getElementById("mr-beds").value || "—";
+          var baths = document.getElementById("mr-baths").value || "—";
+          var box = money(min) + "–" + money(max) + " · " + beds + "+ bd / " + baths + "+ ba";
+          var typeLabel = state.type === "expand" ? "Expand" : "New metro";
+          var note = document.getElementById("mr-note").value.trim();
+          var priKeys = Object.keys(state.priorities).filter(function (k) { return state.priorities[k]; });
+          var line =
+            (state.type === "expand" ? "Expanding " + desk : "New metro") +
+            " · " + strategy +
+            (priKeys.length && state.strategy === "str" ? " · " + priKeys.join(", ") : "");
+
+          var li = document.createElement("li");
+          li.className = "market-pending-item";
+          li.innerHTML =
+            "<div><p class=\"mp-title\">" + escapeHtml(area) + "</p>" +
+            "<p class=\"mp-meta\">" + escapeHtml(typeLabel) +
+            (state.type === "expand" ? " · " + escapeHtml(desk) : "") +
+            " · " + strategy + " · " + financing + " · " + escapeHtml(who) + " · Aug 1</p></div>" +
+            '<span class="mp-status">Queued for setup</span>';
+          pendingList.insertBefore(li, pendingList.firstChild);
+
+          prependFeedCard({
+            area: area,
+            who: who,
+            type: state.type,
+            desk: desk,
+            strategy: strategy,
+            financing: financing,
+            box: box,
+            note: note,
+            line: line,
+          });
+
+          form.reset();
+          state.type = "new";
+          state.strategy = "str";
+          state.financing = "either";
+          state.priorities = {};
+          setChoiceGroup("data-mr-type", "new");
+          setChoiceGroup("data-mr-strategy", "str");
+          setChoiceGroup("data-mr-financing", "either");
+          form.querySelectorAll("[data-mr-priority]").forEach(function (b) { b.classList.remove("is-on"); });
+          applyStrategyDefaults("str");
+          syncTypeUi();
+          syncStrategyUi();
+          syncBackupUi();
+          showToast("market-toast", "Request queued — Grant will wire it into the desk");
+        });
+
+        applyStrategyDefaults("str");
+        syncTypeUi();
+        syncStrategyUi();
+        syncBackupUi();
+      }
+
+      function slugId(addr) {
+        return "shared-" + normalizeAddr(addr).replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").slice(0, 40);
+      }
+
+      function ensureLocationInFilter(loc) {
+        if (FILTER_DEFAULTS.location.indexOf(loc) < 0) {
+          FILTER_DEFAULTS.location.push(loc);
+          FILTER_META.location.options.push({ value: loc, label: loc });
+          if (appliedFilters.location.indexOf(loc) < 0) appliedFilters.location.push(loc);
+        }
+      }
+
+      function prependSharedFeedCard(addr, who) {
+        var feed = document.getElementById("page-feed");
+        if (!feed) return;
+        var day = feed.querySelector(".feed-day");
+        var short = addr.split(",")[0].trim();
+        var article = document.createElement("article");
+        article.className = "feed-card";
+        article.innerHTML =
+          '<div class="feed-card-title-row"><p class="feed-title">Shared property — ' + escapeHtml(short) + "</p></div>" +
+          '<div class="feed-meta"><span class="feed-date">Today</span><span class="pill pill-important">Shared by ' + escapeHtml(who) + "</span></div>" +
+          "<p class=\"feed-summary\">Not in inventory yet · queued for tonight’s refresh · then scores in Opportunities</p>" +
+          '<hr class="feed-divider" />' +
+          '<p class="feed-body collapsed" data-feed-body>' +
+          escapeHtml(who) + " shared " + escapeHtml(addr) +
+          ". Prairie Peak will enrich it on the next daily refresh and add a scored Opportunities row.</p>" +
+          '<button type="button" class="feed-more" data-feed-more>See more</button>' +
+          '<div class="feed-actions">' +
+          '<button type="button" class="feed-chat" data-goto-opps=\'{"shared":"1"}\'>View shared</button>' +
+          '<button type="button" class="feed-link" data-analyze="' + String(addr).replace(/&/g, "&amp;").replace(/"/g, "&quot;") + '">Analyze now</button>' +
+          "</div>";
+        if (day && day.nextSibling) feed.insertBefore(article, day.nextSibling);
+        else feed.appendChild(article);
+        article.querySelectorAll("[data-feed-more]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var body = article.querySelector("[data-feed-body]");
+            if (!body) return;
+            var collapsed = body.classList.toggle("collapsed");
+            btn.textContent = collapsed ? "See more" : "See less";
+          });
+        });
+        article.querySelectorAll("[data-goto-opps]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            openOppsFromFeed(JSON.parse(btn.getAttribute("data-goto-opps")));
+          });
+        });
+        article.querySelectorAll("[data-analyze]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            openAnalyze(btn.getAttribute("data-analyze") || "", false);
+          });
+        });
+      }
+
+      function addAddressToOpportunities(addr) {
+        addr = (addr || "").trim();
+        if (!addr) return false;
+        var existing = findOppByAddress(addr);
+        if (existing) {
+          closeAddrSuggest();
+          addressInput.value = addr;
+          showToast("share-toast", "Already on Opportunities — waiting on refresh or already scored");
+          goNav("opportunities");
+          activeSharedOnly = true;
+          activeDigest = null;
+          runFilter(appliedFilters);
+          existing.scrollIntoView({ block: "nearest", behavior: "smooth" });
+          return true;
+        }
+        var who = currentUserFirstName();
+        var market = guessMarketFromAddress(addr);
+        var loc = guessLocationFromAddress(addr, market);
+        ensureLocationInFilter(loc);
+        shareSeq += 1;
+        var id = slugId(addr) + "-" + shareSeq;
+        var short = addr.split(",")[0].trim();
+        var today = "2026-08-01";
+        var card = document.createElement("article");
+        card.className = "opp is-pending";
+        card.setAttribute("data-id", id);
+        card.setAttribute("data-digest", "");
+        card.setAttribute("data-market", market);
+        card.setAttribute("data-source", "shared");
+        card.setAttribute("data-active", "active");
+        card.setAttribute("data-score", "pending");
+        card.setAttribute("data-beds", "0");
+        card.setAttribute("data-baths", "0");
+        card.setAttribute("data-price", "0");
+        card.setAttribute("data-location", loc);
+        card.setAttribute("data-composite", "-1");
+        card.setAttribute("data-date", today);
+        card.setAttribute("data-shared", "1");
+        card.innerHTML =
+          '<div class="opp-row">' +
+          '<span class="opp-num" aria-hidden="true">1</span>' +
+          '<div class="opp-score" data-bucket="pending" title="Queued · waiting on tonight’s refresh">—</div>' +
+          '<div class="opp-main">' +
+          '<div class="opp-top"><div class="opp-addr-row"><p class="opp-addr">' + escapeHtml(short) + '</p></div><span class="opp-price">—</span></div>' +
+          '<p class="opp-meta"><span class="shared-by">Shared by ' + escapeHtml(who) + "</span> · waiting on refresh · " +
+          (market === "denver" ? "Denver" : "Arkansas") + " · Aug 1</p>" +
+          '<div class="opp-exec-wrap"><p class="opp-exec">Not scored yet. Tonight’s refresh will pull listing data and drop this into the normal Opportunities stack.</p>' +
+          '<button type="button" class="opp-more" data-toggle-summary hidden>More</button></div></div>' +
+          '<div class="opp-side"><div class="rating-block" data-rating-for="' + id + '"></div>' +
+          '<div class="opp-actions"><button type="button" class="btn btn-primary" data-analyze="' +
+          escapeHtml(addr).replace(/"/g, "&quot;") + '">Analyze</button></div></div></div>' +
+          '<div class="opp-note" data-note-for="' + id + '"></div>';
+        list.insertBefore(card, list.firstChild);
+        wireOpportunityCopyButtons();
+        renderRatings();
+        card.querySelectorAll("[data-analyze]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            openAnalyze(
+              btn.getAttribute("data-analyze") || "",
+              btn.getAttribute("data-needs-price") === "1"
+            );
+          });
+        });
+        prependSharedFeedCard(addr, who);
+        closeAddrSuggest();
+        addressInput.value = addr;
+        showToast("share-toast", "Queued for tonight’s refresh — now on Opportunities");
+        updateAddrStatus();
+        return true;
       }
 
       function renderAddrSuggest(items) {
@@ -3034,18 +4068,35 @@
         }
         var html = "";
         var lastGroup = "";
-        items.forEach(function (item, i) {
+        var optionIdx = 0;
+        items.forEach(function (item) {
+          if (item.source === "watch") {
+            if (lastGroup !== "watch") {
+              html += '<div class="addr-suggest-group">Not in inventory yet</div>';
+              lastGroup = "watch";
+            }
+            html +=
+              '<div class="addr-suggest-watch" data-watch-address="' + item.address.replace(/"/g, "&quot;") + '">' +
+              '<p class="watch-addr">' + escapeHtml(item.address) + "</p>" +
+              '<p class="hint">' + escapeHtml(item.hint) + "</p>" +
+              '<div class="addr-suggest-watch-actions">' +
+              '<button type="button" class="btn btn-primary" data-add-opp>Add to Opportunities</button>' +
+              '<button type="button" class="btn btn-ghost" data-run-now>Run analysis now</button>' +
+              "</div></div>";
+            return;
+          }
           var group = item.source === "inventory" ? "Your inventory" : "Address lookup";
           if (group !== lastGroup) {
             html += '<div class="addr-suggest-group">' + group + "</div>";
             lastGroup = group;
           }
           html +=
-            '<button type="button" class="addr-suggest-item" role="option" data-idx="' + i + '"' +
+            '<button type="button" class="addr-suggest-item" role="option" data-idx="' + optionIdx + '"' +
             (item.needsPrice ? ' data-needs-price="1"' : "") +
             ' data-address="' + item.address.replace(/"/g, "&quot;") + '">' +
             escapeHtml(item.address) +
             '<span class="hint">' + escapeHtml(item.hint) + "</span></button>";
+          optionIdx += 1;
         });
         addrSuggest.innerHTML = html;
         addrSuggest.classList.add("open");
@@ -3058,6 +4109,23 @@
             pickAddress(btn.getAttribute("data-address"), btn.getAttribute("data-needs-price") === "1");
           });
         });
+        addrSuggest.querySelectorAll("[data-add-opp]").forEach(function (btn) {
+          btn.addEventListener("mousedown", function (e) { e.preventDefault(); });
+          btn.addEventListener("click", function () {
+            var wrap = btn.closest("[data-watch-address]");
+            var addr = wrap ? wrap.getAttribute("data-watch-address") : addressInput.value;
+            addAddressToOpportunities(addr);
+          });
+        });
+        addrSuggest.querySelectorAll("[data-run-now]").forEach(function (btn) {
+          btn.addEventListener("mousedown", function (e) { e.preventDefault(); });
+          btn.addEventListener("click", function () {
+            var wrap = btn.closest("[data-watch-address]");
+            var addr = wrap ? wrap.getAttribute("data-watch-address") : addressInput.value;
+            pickAddress(addr, false);
+            document.getElementById("btn-run-analyze").click();
+          });
+        });
       }
 
       function pickAddress(addr, needs) {
@@ -3068,11 +4136,13 @@
           overridesPanel.open = true;
           showToast("copy-toast", "Needs price — fill in ask/bid below");
         }
+        updateAddrStatus();
         addressInput.focus();
       }
 
       function openAddrSuggestFromInput() {
         renderAddrSuggest(filterAddressSuggestions(addressInput.value));
+        updateAddrStatus();
       }
 
       function highlightAddrItem(idx) {
@@ -3151,6 +4221,7 @@
         feed: ["Activity feed", "Daily summaries · Jul 31, 2026"],
         opportunities: ["Opportunities", "All listings · filter & sort"],
         analyze: ["Analyze", "Standalone deal analyzer"],
+        "request-market": ["Request a market", "New metro or expand coverage"],
         artifacts: ["My Artifacts", "Saved analyses · organize in folders"],
       };
 
@@ -3502,13 +4573,19 @@
           var noteOpen = notePanel && notePanel.classList.contains("open");
 
           var html = '<div class="rating-row">';
-          html += '<div class="stars" role="group" aria-label="Rate listing">';
+          html += '<div class="stars" role="group" aria-label="' +
+            (current ? "Your rating: " + current + " of 5" : "Rate this listing") +
+            '" data-rated="' + current + '">';
           for (var i = 1; i <= 5; i++) {
-            html += '<button type="button" data-star="' + i + '" class="' + (i <= current ? "on" : "") + '" aria-label="' + i + ' stars">★</button>';
+            html +=
+              '<button type="button" data-star="' + i + '" class="' + (i <= current ? "on" : "") + '"' +
+              ' aria-label="' + (current ? "Change rating to " : "Rate ") + i + ' star' + (i === 1 ? "" : "s") + '"' +
+              ' title="' + i + '★">' +
+              "★</button>";
           }
           html += "</div>";
           if (current) {
-            html += '<button type="button" class="rating-clear" data-clear="1" title="Clear rating">Clear</button>';
+            html += '<button type="button" class="rating-clear" data-clear="1" title="Remove rating">Remove</button>';
           }
           html += '<button type="button" class="rating-note-btn' + (hasNote ? " has-note" : "") + '" data-toggle-note aria-expanded="' + (noteOpen ? "true" : "false") + '">';
           html += hasNote ? "Note ✓" : "Note";
@@ -3528,17 +4605,45 @@
               "</div>";
           }
 
-          block.querySelectorAll("[data-star]").forEach(function (btn) {
+          var starGroup = block.querySelector(".stars");
+
+          function paintStars(preview) {
+            var rated = Number(starGroup.getAttribute("data-rated")) || 0;
+            var previewing = preview != null;
+            starGroup.classList.toggle("is-previewing", previewing);
+            starGroup.querySelectorAll("[data-star]").forEach(function (btn) {
+              var n = Number(btn.getAttribute("data-star"));
+              btn.classList.toggle("on", !previewing && n <= rated);
+              btn.classList.toggle("preview", previewing && n <= preview);
+            });
+          }
+
+          starGroup.querySelectorAll("[data-star]").forEach(function (btn) {
+            btn.addEventListener("mouseenter", function () {
+              paintStars(Number(btn.getAttribute("data-star")));
+            });
+            btn.addEventListener("focus", function () {
+              paintStars(Number(btn.getAttribute("data-star")));
+            });
             btn.addEventListener("click", function () {
               var stars = Number(btn.getAttribute("data-star"));
               var comment = notePanel && notePanel.querySelector("[data-comment]")
                 ? notePanel.querySelector("[data-comment]").value
                 : entry.comment;
+              // Same star again clears — quick way to undo a mis-tap
+              if (stars === current) stars = 0;
               setEntry(id, stars, comment);
               renderRatings();
               refreshListFromApplied();
             });
           });
+          starGroup.addEventListener("mouseleave", function () {
+            paintStars(null);
+          });
+          starGroup.addEventListener("focusout", function (e) {
+            if (!starGroup.contains(e.relatedTarget)) paintStars(null);
+          });
+
           var clear = block.querySelector("[data-clear]");
           if (clear) {
             clear.addEventListener("click", function () {
@@ -3644,6 +4749,7 @@
           resetFilters();
         }
         if (name === "artifacts") renderArtifacts();
+        if (name === "analyze") updateAddrStatus();
         closeNav();
       }
 
@@ -3661,10 +4767,15 @@
         } else {
           addressInput.focus();
         }
+        updateAddrStatus();
       }
 
       function updateCohortBanner() {
-        if (activeDigest) {
+        if (activeSharedOnly) {
+          cohortBanner.classList.add("show");
+          cohortText.textContent = "Showing shared / queued properties";
+          topMeta.textContent = "Shared by family · waiting on refresh or newly added";
+        } else if (activeDigest) {
           cohortBanner.classList.add("show");
           cohortText.textContent = "Filtered to: " + (DIGEST_LABELS[activeDigest] || activeDigest);
           topMeta.textContent = "Digest cohort · not full inventory";
@@ -3678,9 +4789,9 @@
 
       var FILTER_DEFAULTS = {
         market: ["denver", "arkansas"],
-        source: ["mls", "auction"],
+        source: ["mls", "auction", "shared"],
         active: ["active", "inactive"],
-        score: ["strong", "interesting", "pass"],
+        score: ["strong", "interesting", "pass", "pending"],
         rating: ["unrated", "5", "4", "3", "2", "1"],
         location: ["Centennial", "Littleton", "Bentonville", "Rogers", "Bella Vista", "Springdale", "Siloam Springs"],
         beds: 0,
@@ -3704,6 +4815,7 @@
           options: [
             { value: "mls", label: "Redfin" },
             { value: "auction", label: "Auction" },
+            { value: "shared", label: "Shared" },
           ],
         },
         active: {
@@ -3721,6 +4833,7 @@
             { value: "strong", label: "Strong" },
             { value: "interesting", label: "Interesting" },
             { value: "pass", label: "Pass" },
+            { value: "pending", label: "Queued (shared)" },
           ],
         },
         rating: {
@@ -3878,6 +4991,7 @@
           if (isFilterActive(key)) bits.push(FILTER_META[key].label + ": " + summarizeFilter(key));
         });
         if (activeDigest) bits.push("digest cohort");
+        if (activeSharedOnly) bits.push("shared only");
         var el = document.getElementById("filter-summary");
         if (el) {
           el.textContent = (bits.length ? bits.join(" · ") + " · " : "All · ") + summarizeFilter("sort");
@@ -4075,7 +5189,11 @@
 
         cards.forEach(function (card) {
           var ok = true;
-          if (activeDigest && card.dataset.digest !== activeDigest) ok = false;
+          if (activeSharedOnly) {
+            if (card.dataset.shared !== "1") ok = false;
+          } else if (activeDigest && card.dataset.digest !== activeDigest) {
+            ok = false;
+          }
           if (f.market.indexOf(card.dataset.market) < 0) ok = false;
           if (f.source.indexOf(card.dataset.source) < 0) ok = false;
           if (f.active.indexOf(card.dataset.active) < 0) ok = false;
@@ -4094,6 +5212,9 @@
         });
 
         visible.sort(function (a, b) {
+          var sa = a.dataset.shared === "1" ? 1 : 0;
+          var sb = b.dataset.shared === "1" ? 1 : 0;
+          if (sa !== sb) return sb - sa;
           var ca = Number(a.dataset.composite);
           var cb = Number(b.dataset.composite);
           var pa = Number(a.dataset.price);
@@ -4119,7 +5240,7 @@
         });
         document.getElementById("results-count").textContent =
           "Showing " + visible.length + " propert" + (visible.length === 1 ? "y" : "ies") +
-          (activeDigest ? " in digest" : " (all matching filters)");
+          (activeSharedOnly ? " shared" : activeDigest ? " in digest" : " (all matching filters)");
         wireOpportunitySummaryToggles();
       }
 
@@ -4133,6 +5254,7 @@
 
       function resetFilters() {
         activeDigest = null;
+        activeSharedOnly = false;
         appliedFilters = cloneFilters(FILTER_DEFAULTS);
         FILTER_ORDER.forEach(function (key) { syncPanelDraft(key); });
         closeAllQuickFilters();
@@ -4143,6 +5265,7 @@
         appliedFilters = cloneFilters(FILTER_DEFAULTS);
         FILTER_ORDER.forEach(function (key) { syncPanelDraft(key); });
         activeDigest = obj.digest || null;
+        activeSharedOnly = obj.shared === "1" || obj.shared === 1;
         goNav("opportunities");
         runFilter(appliedFilters);
         closeAllQuickFilters();
@@ -4324,6 +5447,28 @@
             viz:
               '<div class="tour-stack">' +
               '<div class="tour-mini-card"><div class="t">Full deal memo</div><div class="m">Revenue · Financials · Sensitivity · Scores · Tax · Guest · Photos · Questions</div><div class="a"><span class="tour-fake-btn">Save to My Artifacts</span><span class="tour-fake-link">Download PDF</span></div></div>' +
+              "</div>",
+          },
+          {
+            kicker: "Share an address",
+            title: "Have a property we don’t track yet?",
+            copy:
+              "<p>Paste it on <strong>Analyze</strong>. If it isn’t in inventory, choose <strong>Add to Opportunities</strong> — it queues for tonight’s refresh, shows as a pending row, and shows up in the Activity feed.</p>" +
+              "<p>You can still <strong>Run analysis now</strong> for a quick memo. No separate tab — same desk loop.</p>",
+            viz:
+              '<div class="tour-stack">' +
+              '<div class="tour-mini-card"><div class="t">Not in inventory yet</div><div class="m">1847 SW A Street, Bentonville AR</div><div class="a"><span class="tour-fake-btn">Add to Opportunities</span><span class="tour-fake-link">Run analysis now</span></div></div>' +
+              "</div>",
+          },
+          {
+            kicker: "Request a market",
+            title: "Want a new city on the desk?",
+            copy:
+              "<p>Sidebar <strong>Request a market</strong> — new metro or expand Denver / NW Arkansas.</p>" +
+              "<p>Tell us strategy (STR / LTR / MTR), buy box, and financing. We wire Redfin IDs and scoring behind the scenes; then it joins daily digests.</p>",
+            viz:
+              '<div class="tour-stack">' +
+              '<div class="tour-mini-card"><div class="t">Centerton, AR</div><div class="m">Expand · NW Arkansas · STR · Queued for setup</div><div class="a"><span class="tour-fake-btn">Submit request</span></div></div>' +
               "</div>",
           },
           {
@@ -4528,7 +5673,34 @@
       window.addEventListener("resize", function () {
         wireOpportunitySummaryToggles();
       });
+      wireMarketRequestForm();
       wireAddressAutocomplete();
+      updateAddrStatus();
+
+      var btnAddOpp = document.getElementById("btn-add-opp");
+      if (btnAddOpp) {
+        btnAddOpp.addEventListener("click", function () {
+          var addr = addressInput.value.trim();
+          if (!addr) {
+            addressInput.focus();
+            updateAddrStatus();
+            return;
+          }
+          if (classifyAddress(addr).state !== "watch") {
+            showToast("share-toast", "Type a full address we don’t already track");
+            updateAddrStatus();
+            return;
+          }
+          addAddressToOpportunities(addr);
+        });
+      }
+      var btnTryUnknown = document.getElementById("btn-try-unknown");
+      if (btnTryUnknown) {
+        btnTryUnknown.addEventListener("click", function () {
+          pickAddress(btnTryUnknown.getAttribute("data-try-addr") || "1200 SE 8th St, Bentonville AR", false);
+          openAddrSuggestFromInput();
+        });
+      }
 
       document.getElementById("btn-run-analyze").addEventListener("click", function () {
         var addr = addressInput.value.trim();
