@@ -1,0 +1,4580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prairie Peak</title>
+  <script>
+    (function () {
+      try {
+        var pref = localStorage.getItem("prairie-peak-theme") || localStorage.getItem("clearwater-theme") || "system";
+        var dark = pref === "dark" || (pref === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme-pref", pref);
+      } catch (e) {}
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7f6;
+      --sidebar: #ffffff;
+      --panel: #ffffff;
+      --panel-2: #eef3f1;
+      --input-bg: #ffffff;
+      --topbar-bg: rgba(255, 255, 255, 0.92);
+      --surface-muted: #fafcfb;
+      --line: #d5e0dc;
+      --ink: #1a2b28;
+      --ink-muted: #5a6f6a;
+      --ink-dim: #849690;
+      --accent: #1f7a6e;
+      --accent-hover: #18665c;
+      --accent-soft: rgba(31, 122, 110, 0.12);
+      --green: #2d8a5e;
+      --blue: #3d7ab8;
+      --orange: #c47a2c;
+      --warn-bg: #fff8ee;
+      --warn-border: #f0d9b0;
+      --warn-ink: #8a5a12;
+      --pill-warm-bg: #fff3e6;
+      --pill-warm-ink: #a05a12;
+      --radius: 10px;
+      --font: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+      --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      --star: #1f7a6e;
+      --star-empty: #c5d4cf;
+      --shadow: 0 1px 2px rgba(26, 43, 40, 0.04), 0 8px 24px rgba(26, 43, 40, 0.06);
+      --popover-shadow: 0 10px 28px rgba(26, 43, 40, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #121a18;
+      --sidebar: #17201e;
+      --panel: #1b2623;
+      --panel-2: #24302d;
+      --input-bg: #1b2623;
+      --topbar-bg: rgba(23, 32, 30, 0.92);
+      --surface-muted: #1a2321;
+      --line: #2f3f3b;
+      --ink: #e7efec;
+      --ink-muted: #a3b5af;
+      --ink-dim: #7a8f88;
+      --accent: #3d9f90;
+      --accent-hover: #4db3a3;
+      --accent-soft: rgba(61, 159, 144, 0.18);
+      --green: #4caf7a;
+      --blue: #5b9fd4;
+      --orange: #d4924a;
+      --warn-bg: #2a2216;
+      --warn-border: #5a4420;
+      --warn-ink: #e0b56a;
+      --pill-warm-bg: #2a2216;
+      --pill-warm-ink: #e0b56a;
+      --star: #3d9f90;
+      --star-empty: #3a4a46;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.24), 0 8px 24px rgba(0, 0, 0, 0.28);
+      --popover-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    a { color: var(--accent); }
+
+    .mock-banner {
+      background: #1f7a6e;
+      color: #f0faf8;
+      text-align: center;
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+    .mock-banner strong { letter-spacing: 0.06em; }
+
+    #view-login {
+      min-height: calc(100vh - 32px);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(31, 122, 110, 0.14), transparent 55%),
+        radial-gradient(ellipse 70% 50% at 90% 80%, rgba(61, 122, 184, 0.1), transparent 50%),
+        var(--bg);
+    }
+    .login-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 36px;
+      width: min(400px, 100%);
+      box-shadow: var(--shadow);
+    }
+    .login-card h1 {
+      margin: 0 0 4px;
+      font-size: 26px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .login-brand {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      margin-bottom: 14px;
+      background: #f3f6f4;
+    }
+    .login-brand img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .login-card .sub { color: var(--ink-muted); margin: 0 0 20px; font-size: 13px; }
+
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-size: 12px;
+      color: var(--ink-muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .field input, .field select, .field textarea,
+    .filter-bar select {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 9px 11px;
+      color: var(--ink);
+    }
+    .field input:focus, .field select:focus, .field textarea:focus,
+    .filter-bar select:focus {
+      outline: 1px solid var(--accent);
+      border-color: var(--accent);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      background: transparent;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-ghost { border-color: var(--line); background: var(--panel-2); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+    #view-app { display: none; height: calc(100vh - 32px); }
+    .shell {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      height: 100%;
+      position: relative;
+    }
+    .shell:not(.sidebar-open) {
+      grid-template-columns: 1fr;
+    }
+    .shell:not(.sidebar-open) .sidebar {
+      display: none;
+    }
+    .sidebar {
+      background: var(--sidebar);
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      padding: 16px 12px;
+      overflow-y: auto;
+      z-index: 20;
+      box-shadow: 1px 0 0 var(--line);
+      min-width: 0;
+    }
+    .nav-scrim {
+      display: none;
+      position: fixed;
+      inset: 32px 0 0 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 15;
+    }
+    .nav-scrim.show { display: block; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 8px 18px;
+    }
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: #f3f6f4;
+      border: 1px solid var(--line);
+      display: grid;
+      place-items: center;
+    }
+    .brand-mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    html[data-theme="dark"] .brand-mark {
+      background: #1b2623;
+    }
+    .brand-name {
+      font-weight: 700;
+      font-size: 16px;
+      font-family: var(--font-display);
+      color: var(--ink);
+    }
+    .brand-tag {
+      display: block;
+      font-size: 11px;
+      color: var(--ink-dim);
+      font-weight: 500;
+      margin-top: 1px;
+    }
+
+    .nav-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: none;
+      background: transparent;
+      color: var(--ink-muted);
+      padding: 9px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
+      font-weight: 500;
+      font-size: 13px;
+    }
+    .nav-btn svg {
+      width: 18px; height: 18px;
+      stroke: currentColor; fill: none; stroke-width: 1.7;
+      flex-shrink: 0;
+    }
+    .nav-btn:hover { background: var(--panel); color: var(--ink); }
+    .nav-btn.active { background: var(--accent-soft); color: var(--accent); }
+
+    .recents { margin-top: 18px; flex: 1; min-height: 0; }
+    .recents-h {
+      padding: 0 10px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink-dim);
+    }
+    .recent-item {
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: var(--ink-muted);
+      text-align: left;
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .recent-item:hover { background: var(--panel); color: var(--ink); }
+
+    .sidebar-foot {
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      margin-top: 8px;
+    }
+    .sidebar-foot .nav-btn.howto {
+      color: var(--ink-dim);
+      font-size: 12.5px;
+    }
+    .sidebar-foot .nav-btn.howto:hover { color: var(--accent); }
+    .sidebar-foot .account-menu { margin-top: 6px; position: relative; }
+    .user-chip {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--ink-muted);
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      text-align: left;
+    }
+    .user-chip:hover {
+      background: var(--panel);
+      color: var(--ink);
+      border-color: var(--line);
+    }
+    .account-menu.open .user-chip {
+      background: var(--panel);
+      border-color: var(--line);
+      color: var(--ink);
+    }
+    .user-chip .chip-meta {
+      flex: 1;
+      min-width: 0;
+    }
+    .user-chip .chip-name {
+      display: block;
+      font-weight: 600;
+      color: inherit;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-chip .chip-role {
+      display: block;
+      font-size: 11px;
+      color: var(--ink-dim);
+      margin-top: 1px;
+    }
+    .user-chip .chip-chev {
+      font-size: 9px;
+      color: var(--ink-dim);
+      flex-shrink: 0;
+    }
+    .account-menu.open .user-chip .chip-chev { transform: rotate(180deg); }
+    .account-panel {
+      display: none;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: calc(100% + 6px);
+      z-index: 35;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--popover-shadow);
+      padding: 4px;
+    }
+    .account-menu.open .account-panel { display: block; }
+    .account-opt {
+      display: block;
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: left;
+      padding: 9px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .account-opt:hover { background: var(--panel-2); color: var(--accent); }
+    .avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--accent-soft);
+      border: 1px solid var(--line);
+      display: grid; place-items: center;
+      font-size: 11px; font-weight: 700; color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .workspace {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--bg);
+      overflow: hidden;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 24px;
+      border-bottom: 1px solid var(--line);
+      background: var(--topbar-bg);
+      backdrop-filter: blur(8px);
+    }
+    .topbar-left {
+      min-width: 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .topbar-titles { min-width: 0; }
+    .topbar h1 { margin: 0; font-size: 18px; font-weight: 700; }
+    .topbar .meta { color: var(--ink-dim); font-size: 12px; margin-top: 2px; }
+    .topbar-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .top-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 36px;
+      padding: 0 12px 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--ink);
+      cursor: pointer;
+      font: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .top-action:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .top-action .glyph {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+    .top-action .glyph svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
+    .top-action .label {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.02em;
+    }
+    @media (max-width: 720px) {
+      .top-action .label { display: none; }
+      .top-action { padding: 0; width: 36px; justify-content: center; border-radius: 8px; }
+    }
+    .theme-menu { position: relative; }
+    .theme-panel {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      z-index: 50;
+      width: 168px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--popover-shadow);
+      padding: 4px;
+    }
+    .theme-menu.open .theme-panel { display: block; }
+    .theme-opt {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+    }
+    .theme-opt:hover { background: var(--panel-2); }
+    .theme-opt[aria-checked="true"] {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .theme-opt .check {
+      width: 14px;
+      color: var(--accent);
+      opacity: 0;
+      font-size: 12px;
+    }
+    .theme-opt[aria-checked="true"] .check { opacity: 1; }
+    .icon-btn .icon-sun,
+    .icon-btn .icon-moon { display: none; }
+    html[data-theme="light"] .icon-btn .icon-sun { display: block; }
+    html[data-theme="dark"] .icon-btn .icon-moon { display: block; }
+    .icon-btn {
+      width: 36px; height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink-muted);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      padding: 0;
+    }
+    .icon-btn.menu-btn { display: grid; }
+    .icon-btn:hover { color: var(--accent); border-color: var(--accent); }
+    .icon-btn svg {
+      width: 18px; height: 18px;
+      stroke: currentColor; fill: none; stroke-width: 1.7;
+    }
+
+    .main { flex: 1; overflow-y: auto; padding: 20px 24px 48px; }
+    .page { display: none; max-width: 920px; }
+    .page.wide { max-width: 1100px; }
+    .page.active { display: block; }
+
+    /* Hidden for client share — restore display:flex for internal design review */
+    .anno {
+      display: none;
+      gap: 8px;
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      color: var(--warn-ink);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 12px;
+      margin-bottom: 14px;
+    }
+    .anno .q {
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--orange); color: #fff;
+      display: grid; place-items: center;
+      font-weight: 800; font-size: 10px; flex-shrink: 0;
+    }
+
+    .feed-section-label {
+      margin: 4px 0 14px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+    }
+    .feed-day {
+      display: flex;
+      justify-content: center;
+      margin: 18px 0 12px;
+    }
+    .feed-day:first-of-type { margin-top: 0; }
+    .feed-day span {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-muted);
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 12px;
+    }
+
+    .feed-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px 16px 12px;
+      margin-bottom: 12px;
+    }
+    .feed-card-title-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .feed-card-title-row .warn-icon {
+      flex-shrink: 0;
+      margin-top: 2px;
+      color: var(--orange);
+      width: 16px;
+      height: 16px;
+    }
+    .feed-title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--ink);
+    }
+    .feed-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0 0;
+    }
+    .feed-date {
+      font-size: 12px;
+      color: var(--ink-dim);
+      font-weight: 500;
+    }
+    .pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .pill-important { background: var(--pill-warm-bg); color: var(--pill-warm-ink); }
+    .pill-info { background: var(--accent-soft); color: var(--blue); }
+    .pill-ok { background: rgba(45, 138, 94, 0.14); color: var(--green); }
+    .pill-muted { background: var(--panel-2); color: var(--ink-muted); }
+
+    .feed-summary {
+      margin: 8px 0 0;
+      font-size: 13px;
+      color: var(--ink-muted);
+      line-height: 1.45;
+    }
+    .feed-divider {
+      border: 0;
+      border-top: 1px solid var(--line);
+      margin: 12px 0;
+    }
+    .feed-body {
+      margin: 0;
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: var(--ink);
+    }
+    .feed-body.collapsed {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .feed-more {
+      display: inline;
+      border: 0;
+      background: none;
+      color: var(--ink-dim);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
+      margin-left: 4px;
+    }
+    .feed-more:hover { color: var(--accent); text-decoration: underline; }
+
+    .feed-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 12px;
+      margin-top: 12px;
+      padding-top: 2px;
+    }
+    .feed-chat {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
+      border-radius: 8px;
+      padding: 6px 11px;
+      font: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .feed-chat:hover { background: var(--accent-soft); }
+    .feed-chat svg {
+      width: 14px; height: 14px;
+      stroke: currentColor; fill: none; stroke-width: 1.7;
+    }
+    .feed-link {
+      border: 0;
+      background: none;
+      color: var(--accent);
+      font: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 0;
+    }
+    .feed-link:hover { text-decoration: underline; }
+
+    .exec { margin: 0; font-size: 14px; line-height: 1.55; }
+    .exec + .exec { margin-top: 8px; }
+
+    .filter-shelf {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      margin-bottom: 14px;
+      overflow: visible;
+      position: relative;
+      z-index: 5;
+    }
+    .filter-shelf.open { z-index: 20; }
+    .filter-shelf-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: none;
+      background: transparent;
+      color: var(--ink);
+      padding: 12px 14px;
+      cursor: pointer;
+      text-align: left;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .filter-shelf-toggle:hover { background: var(--panel-2); }
+    .filter-shelf-toggle .chev {
+      color: var(--ink-dim);
+      font-size: 11px;
+      transition: transform 0.15s ease;
+    }
+    .filter-shelf.open .filter-shelf-toggle .chev { transform: rotate(180deg); }
+    .filter-shelf-toggle .summary {
+      font-weight: 500;
+      font-size: 12px;
+      color: var(--ink-muted);
+      margin-left: auto;
+      margin-right: 8px;
+    }
+    .filter-bar {
+      display: none;
+      border-top: 1px solid var(--line);
+      background: var(--surface-muted);
+      padding: 12px 14px 14px;
+    }
+    .filter-shelf.open .filter-bar { display: block; }
+    .filter-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .qf {
+      position: relative;
+      z-index: 1;
+    }
+    .qf.open { z-index: 30; }
+    .qf-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 220px;
+      padding: 7px 10px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+    }
+    .qf-trigger:hover { border-color: #b8c9c4; }
+    .qf.open .qf-trigger,
+    .qf-trigger:focus-visible {
+      border-color: var(--accent);
+      outline: 1px solid rgba(31, 122, 110, 0.25);
+    }
+    .qf-trigger.active-filter {
+      border-color: var(--accent);
+      background: rgba(31, 122, 110, 0.06);
+    }
+    .qf-trigger .qf-name {
+      color: var(--ink-dim);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 10.5px;
+    }
+    .qf-trigger .qf-value {
+      color: var(--ink);
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 120px;
+    }
+    .qf-trigger .qf-chev {
+      margin-left: 2px;
+      font-size: 9px;
+      color: var(--ink-muted);
+      transition: transform 0.15s;
+    }
+    .qf.open .qf-chev { transform: rotate(180deg); }
+    .qf-panel {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      z-index: 40;
+      width: 240px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--popover-shadow);
+      overflow: hidden;
+    }
+    .qf.open .qf-panel { display: flex; flex-direction: column; }
+    .qf-panel.wide { width: 280px; }
+    .qf-panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 12px 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .qf-panel-head strong {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .qf-link {
+      border: 0;
+      background: none;
+      color: var(--accent);
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      padding: 0;
+    }
+    .qf-link:hover { text-decoration: underline; }
+    .qf-list {
+      max-height: 180px;
+      overflow-y: auto;
+      padding: 6px 4px;
+    }
+    .qf-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      font-size: 13px;
+      color: var(--ink);
+      cursor: pointer;
+      border-radius: 4px;
+      user-select: none;
+    }
+    .qf-item:hover { background: rgba(31, 122, 110, 0.06); }
+    .qf-item input {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--accent);
+      margin: 0;
+      flex-shrink: 0;
+    }
+    .qf-body {
+      padding: 10px 12px;
+    }
+    .qf-body select {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: var(--ink);
+      font-family: inherit;
+      font-size: 13px;
+    }
+    .qf-range {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .qf-range input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+    .qf-range-val {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .qf-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 8px 10px;
+      border-top: 1px solid var(--line);
+      background: var(--surface-muted);
+    }
+    .qf-actions .btn {
+      padding: 6px 12px;
+      font-size: 12.5px;
+    }
+    .qf-clear-all {
+      margin-left: auto;
+      align-self: center;
+    }
+    .filter-hint {
+      margin: 10px 0 0;
+      font-size: 11.5px;
+      color: var(--ink-dim);
+    }
+
+    .tag-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin: 0 0 12px;
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px dashed var(--line);
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--ink-muted);
+    }
+    .tag-legend span strong { color: var(--ink); font-weight: 600; }
+
+    .cohort-banner {
+      display: none;
+      background: var(--accent-soft);
+      border: 1px solid rgba(31, 122, 110, 0.28);
+      color: var(--accent);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 13px;
+      margin-bottom: 12px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .cohort-banner.show { display: flex; }
+
+    .results-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      color: var(--ink-muted);
+      font-size: 13px;
+    }
+
+    /* Opportunities — dense scan list */
+    #opp-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+    .opp {
+      background: var(--panel);
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      border-radius: 0;
+      padding: 0;
+      margin: 0;
+      box-shadow: none;
+    }
+    .opp:last-child { border-bottom: 0; }
+    .opp.hidden { display: none; }
+    .opp:hover { background: var(--panel-2); }
+    .opp.is-expanded { background: var(--panel); }
+    .opp.is-expanded:hover { background: var(--panel); }
+    .opp.is-summary-open { background: var(--panel); }
+
+    .opp-row {
+      display: grid;
+      grid-template-columns: 28px 44px minmax(0, 1fr) auto;
+      gap: 10px 12px;
+      align-items: start;
+      padding: 10px 12px 10px 10px;
+      cursor: default;
+    }
+    @media (max-width: 820px) {
+      .opp-row {
+        grid-template-columns: 24px 40px minmax(0, 1fr);
+      }
+      .opp-side {
+        grid-column: 1 / -1;
+        justify-content: space-between;
+        padding-top: 0;
+        padding-left: 36px;
+      }
+    }
+
+    .opp-num {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      padding-top: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--ink-dim);
+      letter-spacing: 0.02em;
+    }
+
+    .opp-score {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      background: var(--panel-2);
+      color: var(--ink-dim);
+      border: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+    .opp-score[data-bucket="strong"] {
+      background: #e6f5ec;
+      color: #1f6b45;
+      border-color: rgba(31, 107, 69, 0.22);
+    }
+    .opp-score[data-bucket="interesting"] {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: rgba(31, 122, 110, 0.28);
+    }
+    .opp-score[data-bucket="pass"] {
+      background: var(--panel-2);
+      color: var(--ink-dim);
+    }
+
+    .opp-main { min-width: 0; }
+    .opp-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 2px;
+    }
+    .opp-addr-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin: 0;
+      min-width: 0;
+    }
+    .opp-addr {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--ink);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      max-width: 100%;
+      min-width: 0;
+    }
+    a.opp-addr:hover,
+    a.opp-addr:focus-visible {
+      color: var(--accent);
+      outline: none;
+    }
+    a.opp-addr:hover { text-decoration: underline; text-underline-offset: 2px; }
+    .opp-addr.is-inactive {
+      color: var(--ink-muted);
+      font-weight: 650;
+    }
+    .opp-ext {
+      flex-shrink: 0;
+      width: 12px;
+      height: 12px;
+      opacity: 0.45;
+    }
+    a.opp-addr:hover .opp-ext,
+    a.opp-addr:focus-visible .opp-ext {
+      opacity: 0.9;
+      color: var(--accent);
+    }
+    .copy-addr-btn {
+      flex-shrink: 0;
+      display: inline-grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--ink-muted);
+      cursor: pointer;
+      opacity: 1;
+    }
+    .copy-addr-btn:hover,
+    .copy-addr-btn:focus-visible {
+      background: var(--panel);
+      border-color: var(--line);
+      color: var(--accent);
+      outline: none;
+    }
+    .copy-addr-btn svg { width: 13px; height: 13px; }
+    .opp-price {
+      flex-shrink: 0;
+      font-size: 14px;
+      font-weight: 750;
+      font-variant-numeric: tabular-nums;
+      color: var(--ink);
+    }
+    .opp-meta {
+      margin: 0 0 4px;
+      font-size: 12px;
+      color: var(--ink-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .opp-exec-wrap {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .opp-exec {
+      margin: 0;
+      flex: 1;
+      min-width: 0;
+      font-size: 12.5px;
+      line-height: 1.4;
+      color: var(--ink-muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .opp.is-summary-open .opp-exec {
+      display: block;
+      -webkit-line-clamp: unset;
+      color: var(--ink);
+    }
+    .opp-more {
+      flex-shrink: 0;
+      border: none;
+      background: transparent;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 0;
+      cursor: pointer;
+      line-height: 1.4;
+    }
+    .opp-more:hover { text-decoration: underline; }
+
+    .opp-side {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      min-width: 0;
+      padding-top: 6px;
+    }
+    .opp-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .opp-actions .btn {
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    .feed-card, .filter-shelf, .artifacts-folders, .artifacts-list li, .report, .login-card {
+      box-shadow: var(--shadow);
+    }
+    .feed-card {
+      border-color: var(--line);
+    }
+
+    /* Keep tag styles for feed / elsewhere; opportunities no longer use chips */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin: 0;
+    }
+    .tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 3px;
+      background: var(--panel-2);
+      color: var(--ink-muted);
+      letter-spacing: 0.01em;
+    }
+    .tag-active { background: #e6f5ec; color: #1f6b45; }
+    .tag-gone { background: #fce8e8; color: #a33b3b; }
+    .tag-auction { background: var(--pill-warm-bg); color: var(--pill-warm-ink); }
+    .tag-mls { background: #e8f1fa; color: #2a5f96; }
+    .tag-strong { background: #e6f5ec; color: #1f6b45; }
+    .tag-interesting { background: var(--accent-soft); color: var(--accent); }
+    .tag-pass { background: var(--panel-2); color: var(--ink-dim); }
+
+    /* Compact rating — stars always on; comment on demand */
+    .rating-block {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+    }
+    .rating-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: nowrap;
+    }
+    .rating-row .rating-label { display: none; }
+    .stars {
+      display: inline-flex;
+      gap: 0;
+    }
+    .stars button {
+      border: none;
+      background: transparent;
+      padding: 0 1px;
+      cursor: pointer;
+      font-size: 15px;
+      line-height: 1;
+      color: var(--star-empty);
+    }
+    .stars button.on { color: var(--star); }
+    .stars button:hover { color: var(--accent-hover); }
+    .rating-clear {
+      border: none;
+      background: transparent;
+      color: var(--ink-dim);
+      font-size: 10px;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0 2px;
+      display: inline;
+    }
+    .rating-clear:hover { color: var(--ink-muted); }
+    .rating-value { display: none; }
+    .rating-note-btn {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink-muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      cursor: pointer;
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+    .rating-note-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .rating-note-btn.has-note {
+      background: var(--accent-soft);
+      border-color: rgba(31, 122, 110, 0.35);
+      color: var(--accent);
+    }
+    .opp-note {
+      display: none;
+      padding: 0 12px 12px 84px;
+      border-top: 0;
+    }
+    .opp-note.open { display: block; }
+    .opp-note textarea {
+      width: 100%;
+      min-height: 64px;
+      resize: vertical;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+    }
+    .opp-note textarea:focus {
+      outline: 1px solid var(--accent);
+      border-color: var(--accent);
+    }
+    .opp-note .comment-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .opp-note .hint {
+      font-size: 11px;
+      color: var(--ink-dim);
+    }
+    @media (max-width: 820px) {
+      .opp-note { padding-left: 12px; }
+      .opp-num { padding-top: 10px; }
+    }
+
+    .addr-combo { position: relative; }
+    .addr-suggest {
+      display: none;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 4px);
+      z-index: 20;
+      max-height: 280px;
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    .addr-suggest.open { display: block; }
+    .addr-suggest-group {
+      padding: 8px 12px 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+    }
+    .addr-suggest-item {
+      display: block;
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      padding: 10px 12px;
+      cursor: pointer;
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+    }
+    .addr-suggest-item:hover,
+    .addr-suggest-item.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .addr-suggest-item .hint {
+      display: block;
+      margin-top: 2px;
+      font-size: 11px;
+      color: var(--ink-muted);
+      font-weight: 500;
+    }
+    .addr-suggest-empty {
+      padding: 12px;
+      font-size: 13px;
+      color: var(--ink-muted);
+    }
+    .field-hint {
+      margin: 6px 0 0;
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 40;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal-backdrop.show { display: flex; }
+    .modal {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      width: min(440px, 100%);
+      padding: 22px 22px 18px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+    }
+    .modal h2 {
+      margin: 0 0 4px;
+      font-size: 17px;
+    }
+    .modal .modal-sub {
+      margin: 0 0 16px;
+      font-size: 13px;
+      color: var(--ink-muted);
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    /* Product tour */
+    .tour-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 45;
+      background: rgba(10, 16, 14, 0.55);
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .tour-backdrop.show { display: flex; }
+    .tour-card {
+      width: min(560px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--popover-shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      max-height: min(88vh, 720px);
+      position: relative;
+    }
+    .tour-skip {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      z-index: 2;
+      border: 0;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--ink-dim);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+    }
+    html[data-theme="dark"] .tour-skip {
+      background: rgba(27, 38, 35, 0.78);
+    }
+    .tour-skip:hover { color: var(--ink); }
+    .tour-viz {
+      background:
+        radial-gradient(ellipse 70% 80% at 15% 20%, var(--accent-soft), transparent 55%),
+        radial-gradient(ellipse 60% 70% at 90% 80%, rgba(61, 122, 184, 0.12), transparent 50%),
+        var(--surface-muted);
+      border-bottom: 1px solid var(--line);
+      padding: 22px 22px 18px;
+      min-height: 168px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tour-body {
+      padding: 18px 22px 8px;
+      overflow-y: auto;
+    }
+    .tour-kicker {
+      margin: 0 0 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .tour-body h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+    .tour-body p {
+      margin: 0 0 10px;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--ink-muted);
+    }
+    .tour-body p strong { color: var(--ink); font-weight: 700; }
+    .tour-footer {
+      display: grid;
+      grid-template-columns: 88px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 18px 16px;
+      border-top: 1px solid var(--line);
+      background: var(--panel);
+    }
+    .tour-dots {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+    }
+    .tour-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--line);
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+    }
+    .tour-dot.active { background: var(--accent); }
+    .tour-dot:hover { background: var(--ink-dim); }
+    .tour-dot.active:hover { background: var(--accent); }
+    .tour-footer .btn-tour-back {
+      justify-self: start;
+      min-width: 0;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+    .tour-footer .btn-tour-next {
+      justify-self: end;
+      min-width: 110px;
+    }
+
+    .tour-map {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      width: 100%;
+    }
+    .tour-map-chip {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 14px;
+      min-width: 130px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .tour-map-chip .city {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--ink);
+    }
+    .tour-map-chip .role {
+      font-size: 11px;
+      color: var(--ink-dim);
+      margin-top: 2px;
+    }
+    .tour-flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+    }
+    .tour-node {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+      box-shadow: var(--shadow);
+      text-align: center;
+      min-width: 92px;
+    }
+    .tour-node.active-node {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .tour-node .sub {
+      display: block;
+      font-weight: 500;
+      font-size: 10px;
+      color: var(--ink-dim);
+      margin-top: 2px;
+    }
+    .tour-arrow {
+      color: var(--ink-dim);
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .tour-stack {
+      display: grid;
+      gap: 8px;
+      width: min(100%, 360px);
+    }
+    .tour-mini-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      box-shadow: var(--shadow);
+    }
+    .tour-mini-card .t { font-weight: 700; font-size: 13px; color: var(--ink); }
+    .tour-mini-card .m { font-size: 11px; color: var(--ink-dim); margin-top: 2px; }
+    .tour-mini-card .a {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .tour-pill {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: var(--pill-warm-bg);
+      color: var(--pill-warm-ink);
+    }
+    .tour-fake-btn {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      padding: 3px 8px;
+    }
+    .tour-fake-link {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .tour-filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+    }
+    .tour-filter-pill {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 6px 9px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink);
+      box-shadow: var(--shadow);
+    }
+    .tour-filter-pill em {
+      font-style: normal;
+      color: var(--ink-dim);
+      font-weight: 600;
+      margin-right: 4px;
+      text-transform: uppercase;
+      font-size: 9px;
+      letter-spacing: 0.04em;
+    }
+    .tour-stars {
+      letter-spacing: 2px;
+      color: var(--accent);
+      font-size: 18px;
+    }
+
+    .toast-fixed {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 50;
+      padding: 12px 16px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      box-shadow: var(--shadow);
+    }
+    .toast-fixed.show { display: block; }
+
+    .info-banner {
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 12px;
+      color: var(--ink-muted);
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+    .info-banner code {
+      font-size: 12px;
+      color: var(--ink);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 1px 5px;
+    }
+    .info-banner.warn {
+      background: var(--warn-bg);
+      border-color: var(--warn-border);
+      color: var(--warn-ink);
+    }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    details.overrides {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin: 12px 0 16px;
+    }
+    details.overrides summary { cursor: pointer; font-weight: 600; }
+    .overrides-help {
+      margin: 10px 0 0;
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: var(--ink-muted);
+    }
+    .overrides-help strong { color: var(--ink); font-weight: 600; }
+    .report {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px 22px 22px;
+      margin-top: 16px;
+    }
+    .report-brand {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin: 0 0 8px;
+    }
+    .report h2 {
+      margin: 0 0 6px;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.3;
+      border: 0;
+      padding: 0;
+    }
+    .report-meta {
+      margin: 0 0 14px;
+      font-size: 13px;
+      color: var(--ink-muted);
+      line-height: 1.5;
+    }
+    .report-meta a { font-weight: 600; }
+    .report-callout {
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--surface-muted);
+      font-size: 12.5px;
+      color: var(--ink-muted);
+      line-height: 1.45;
+    }
+    .report-callout strong { color: var(--ink); }
+    .report h3 {
+      margin: 22px 0 8px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--accent);
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--line);
+    }
+    .report h3:first-of-type { margin-top: 8px; }
+    .report table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0 4px; }
+    .report th {
+      background: var(--panel-2);
+      text-align: left;
+      padding: 8px 10px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--ink-dim);
+    }
+    .report td { border-bottom: 1px solid var(--line); padding: 8px 10px; vertical-align: top; }
+    .report td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .report tr.highlight td { background: var(--accent-soft); font-weight: 600; }
+    .score-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 10px 0 4px;
+    }
+    .score-tile {
+      background: var(--surface-muted);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+    .score-tile .lbl {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin-bottom: 4px;
+    }
+    .score-tile .val {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.1;
+    }
+    .score-tile .val.accent { color: var(--accent); }
+    .score-tile .sub {
+      display: block;
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--ink-muted);
+    }
+    .report-list {
+      margin: 8px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .report-list li {
+      position: relative;
+      padding: 7px 0 7px 14px;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+      color: var(--ink);
+      line-height: 1.45;
+    }
+    .report-list li:last-child { border-bottom: 0; }
+    .report-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 14px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .report-list .dim { color: var(--ink-muted); }
+    .report-note {
+      margin: 8px 0 0;
+      font-size: 12px;
+      color: var(--ink-dim);
+      line-height: 1.45;
+    }
+    @media (max-width: 720px) {
+      .score-row { grid-template-columns: 1fr 1fr; }
+    }
+
+    .artifacts-layout {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .artifacts-folders {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px;
+    }
+    .artifacts-folders h3 {
+      margin: 0 0 8px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-dim);
+      padding: 0 6px;
+    }
+    .folder-btn {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      border: none;
+      background: transparent;
+      color: var(--ink-muted);
+      padding: 8px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .folder-btn:hover { background: var(--panel-2); color: var(--ink); }
+    .folder-btn.active { background: var(--accent-soft); color: var(--accent); }
+    .folder-btn .count {
+      font-size: 11px;
+      color: var(--ink-dim);
+      background: var(--bg);
+      padding: 1px 6px;
+      border-radius: 8px;
+    }
+    .folder-actions { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+    .artifacts-list { list-style: none; padding: 0; margin: 0; }
+    .artifacts-list li {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+    .artifact-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .artifacts-list .name { font-weight: 700; margin: 0 0 4px; }
+    .artifacts-list .when { font-size: 12px; color: var(--ink-muted); margin: 0; }
+    .artifact-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .artifacts-empty {
+      color: var(--ink-muted);
+      font-size: 13px;
+      padding: 24px 12px;
+      text-align: center;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+    }
+    @media (max-width: 900px) {
+      .artifacts-layout { grid-template-columns: 1fr; }
+      .shell,
+      .shell:not(.sidebar-open) {
+        grid-template-columns: 1fr;
+      }
+      .sidebar,
+      .shell:not(.sidebar-open) .sidebar {
+        display: flex;
+        position: fixed;
+        top: 32px;
+        left: 0;
+        bottom: 0;
+        width: min(280px, 86vw);
+        transform: translateX(-105%);
+        transition: transform 0.2s ease;
+        box-shadow: 8px 0 32px rgba(26, 43, 40, 0.18);
+        z-index: 50;
+      }
+      .shell.sidebar-open .sidebar {
+        transform: translateX(0);
+      }
+      .nav-scrim { z-index: 40; }
+      .qf-panel { width: min(280px, calc(100vw - 48px)); }
+      .qf-clear-all { margin-left: 0; }
+      .opp-top { flex-wrap: wrap; }
+      .opp-meta, .opp-addr { white-space: normal; }
+      .opp-num { padding-top: 10px; }
+    }
+
+    @media print {
+      .mock-banner, .sidebar, .topbar, .btn-row, .opp-actions, .opp-side, .nav-scrim, .modal-backdrop, .tour-backdrop, .toast-fixed,
+      .filter-shelf, .tag-legend, .anno, .rating-block, .opp-note, .artifacts-folders, .copy-addr-btn { display: none !important; }
+      .shell { display: block; }
+      .workspace, .main, .page, .page.active { display: block !important; max-width: none; padding: 0; overflow: visible; }
+      body { background: #fff; color: #111; }
+      .report { box-shadow: none; border: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="mock-banner">
+    <strong>Prairie Peak</strong> preview for Geoff &amp; Jo · sample listings &amp; numbers · use <em>Give feedback</em> in the sidebar anytime
+  </div>
+
+  <div id="view-login">
+    <div class="login-card">
+      <div class="login-brand">
+        <img src="prairie-peak-logo.png" alt="" width="56" height="56" />
+      </div>
+      <h1>Prairie Peak</h1>
+      <p class="sub">Investment desk for Denver &amp; NW Arkansas · Geoff, Jo &amp; family</p>
+      <p class="sub" style="margin-top:-12px">Activity feed → Opportunities → Analyze → My Artifacts</p>
+      <div class="field">
+        <label for="pwd">Password</label>
+        <input id="pwd" type="password" placeholder="Any password works in this preview" />
+      </div>
+      <button class="btn btn-primary" type="button" id="btn-signin">Sign in</button>
+    </div>
+  </div>
+
+  <div id="view-app">
+    <div class="shell sidebar-open" id="shell">
+      <div class="nav-scrim" id="nav-scrim" hidden></div>
+      <aside class="sidebar" id="sidebar" aria-label="Primary navigation">
+        <div class="brand">
+          <div class="brand-mark">
+            <img src="prairie-peak-logo.png" alt="" width="36" height="36" />
+          </div>
+          <div>
+            <div class="brand-name">Prairie Peak</div>
+            <span class="brand-tag">Investment desk</span>
+          </div>
+        </div>
+
+        <p class="recents-h" style="padding-top:0;margin:0 0 4px">Navigate</p>
+        <button type="button" class="nav-btn active" data-nav="feed">
+          <svg viewBox="0 0 24 24"><path d="M4 12h4l2-6 4 12 2-6h4"/></svg>
+          Activity feed
+        </button>
+        <button type="button" class="nav-btn" data-nav="opportunities" data-opps-all="1">
+          <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+          Opportunities
+        </button>
+        <button type="button" class="nav-btn" data-nav="analyze">
+          <svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15l3-4 3 2 4-6"/></svg>
+          Analyze
+        </button>
+        <button type="button" class="nav-btn" data-nav="artifacts">
+          <svg viewBox="0 0 24 24"><path d="M4 6h7v5H4zM13 6h7v5h-7zM4 13h7v5H4zM13 13h7v5h-7z"/></svg>
+          My Artifacts
+        </button>
+
+        <div class="recents">
+          <div class="recents-h">Recents</div>
+          <button type="button" class="recent-item" data-goto-opps='{"digest":"denver-2026-07-31"}'>Denver digest — Jul 31</button>
+          <button type="button" class="recent-item" data-goto-opps='{"digest":"arkansas-2026-07-31"}'>NW Arkansas — Jul 31</button>
+          <button type="button" class="recent-item" data-nav="analyze">Analyze deal</button>
+          <button type="button" class="recent-item" data-nav="opportunities" data-opps-all="1">All opportunities</button>
+        </div>
+
+        <div class="sidebar-foot">
+          <button type="button" class="nav-btn howto" id="btn-tour" title="How to use Prairie Peak" aria-label="How to use Prairie Peak">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M3 17.5h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M5.5 17.5 10 9.5l2.2 3.8L16.5 6l4 11.5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+              <circle cx="16.5" cy="6" r="1.6" fill="currentColor"/>
+              <path d="M8.2 17.5c.4-1.6 1.2-3 2.2-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+            </svg>
+            How to use
+          </button>
+          <button type="button" class="nav-btn howto" id="btn-platform-feedback" title="Bugs &amp; ideas about Prairie Peak" aria-label="Give feedback">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 19.5v-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              <circle cx="12" cy="8.2" r="2.1" fill="currentColor"/>
+              <path d="M7.2 11.2a6.2 6.2 0 0 1 9.6 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M5 14a9 9 0 0 1 14 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.55"/>
+            </svg>
+            Give feedback
+          </button>
+          <div class="account-menu" id="account-menu">
+            <button type="button" class="user-chip" id="btn-account" aria-haspopup="menu" aria-expanded="false" title="Account">
+              <div class="avatar" id="account-avatar">Ge</div>
+              <span class="chip-meta">
+                <span class="chip-name" id="account-name">Geoff Rosen</span>
+                <span class="chip-role" id="account-role">NW Arkansas</span>
+              </span>
+              <span class="chip-chev" aria-hidden="true">▲</span>
+            </button>
+            <div class="account-panel" role="menu" aria-label="Account">
+              <button type="button" class="account-opt" role="menuitem" id="btn-switch-user">Switch user</button>
+              <button type="button" class="account-opt" role="menuitem" id="btn-signout">Sign out</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <div class="workspace">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button type="button" class="icon-btn menu-btn" id="btn-nav-toggle" title="Open navigation" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false">
+              <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+            </button>
+            <div class="topbar-titles">
+              <h1 id="topbar-title">Activity feed</h1>
+              <div class="meta" id="topbar-meta">Daily summaries · Jul 31, 2026</div>
+            </div>
+          </div>
+          <div class="topbar-actions">
+            <div class="theme-menu" id="theme-menu">
+              <button type="button" class="icon-btn" id="btn-theme" title="Appearance" aria-label="Appearance" aria-haspopup="menu" aria-expanded="false">
+                <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M3 12h2M19 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+                <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A7.5 7.5 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg>
+              </button>
+              <div class="theme-panel" role="menu" aria-label="Appearance">
+                <button type="button" class="theme-opt" role="menuitemradio" data-theme-opt="light" aria-checked="false"><span class="check">✓</span> Light</button>
+                <button type="button" class="theme-opt" role="menuitemradio" data-theme-opt="dark" aria-checked="false"><span class="check">✓</span> Dark</button>
+                <button type="button" class="theme-opt" role="menuitemradio" data-theme-opt="system" aria-checked="false"><span class="check">✓</span> System</button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="main">
+          <!-- ACTIVITY FEED -->
+          <section id="page-feed" class="page active">
+            <div class="anno">
+              <span class="q">?</span>
+              <span>Pattern from agent activity feeds (Quick / Copilot-style cards): title · badge · summary · expand · footer actions. “View opportunities” opens that digest’s listings.</span>
+            </div>
+
+            <p class="feed-section-label">All activity</p>
+
+            <div class="feed-day"><span>Friday, Jul 31 · Today</span></div>
+
+            <article class="feed-card">
+              <div class="feed-card-title-row">
+                <p class="feed-title">Denver South — daily digest</p>
+              </div>
+              <div class="feed-meta">
+                <span class="feed-date">7/31/2026</span>
+                <span class="pill pill-important">Important</span>
+              </div>
+              <p class="feed-summary">4 new · 2 above threshold · Market health Grade A · Haley on Denver emails</p>
+              <hr class="feed-divider" />
+              <p class="feed-body collapsed" data-feed-body>
+                Four new listings scored; two cleared the bar. Top of the stack is 7314 S Downing Cir W — 5/4, livability 87 — a real space upgrade vs the family’s current Denver home if the cash-flow hit is acceptable. Second look: 3532 E Davies Pl at $1.0M. Both are livability plays at 7%.
+              </p>
+              <button type="button" class="feed-more" data-feed-more>See more</button>
+              <div class="feed-actions">
+                <button type="button" class="feed-chat" data-goto-opps='{"digest":"denver-2026-07-31"}'>
+                  <svg viewBox="0 0 24 24"><path d="M5 6h14v10H9l-4 3V6z"/></svg>
+                  View opportunities
+                </button>
+                <button type="button" class="feed-link" data-analyze="7314 S Downing Cir W, Centennial CO">Analyze top find</button>
+              </div>
+            </article>
+
+            <article class="feed-card">
+              <div class="feed-card-title-row">
+                <svg class="warn-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20L12 3z" fill="none"/><path d="M12 10v4M12 17h.01"/></svg>
+                <p class="feed-title">NW Arkansas — daily digest</p>
+              </div>
+              <div class="feed-meta">
+                <span class="feed-date">7/31/2026</span>
+                <span class="pill pill-info">4 auctions</span>
+              </div>
+              <p class="feed-summary">25 new MLS · 0 above 75 · 4 auctions above 60 · confirm hammer before cash-on-cash</p>
+              <hr class="feed-divider" />
+              <p class="feed-body collapsed" data-feed-body>
+                Twenty-five new MLS cards scored; none cleared the Arkansas composite 75 bar. Signal is on Auction.com — four foreclosure deals above 60 matching your buy box. Stress tests pass at conservative occupancy. Confirm hammer price before treating cash-on-cash as real.
+              </p>
+              <button type="button" class="feed-more" data-feed-more>See more</button>
+              <div class="feed-actions">
+                <button type="button" class="feed-chat" data-goto-opps='{"digest":"arkansas-2026-07-31"}'>
+                  <svg viewBox="0 0 24 24"><path d="M5 6h14v10H9l-4 3V6z"/></svg>
+                  View opportunities
+                </button>
+                <button type="button" class="feed-link" data-analyze="4305 SW Layton Road, Bentonville AR" data-needs-price="1">Analyze top find</button>
+              </div>
+            </article>
+
+            <div class="feed-day"><span>Thursday, Jul 30 · Yesterday</span></div>
+
+            <article class="feed-card">
+              <div class="feed-card-title-row">
+                <p class="feed-title">Denver South — daily digest</p>
+              </div>
+              <div class="feed-meta">
+                <span class="feed-date">7/30/2026</span>
+                <span class="pill pill-ok">1 interesting</span>
+              </div>
+              <p class="feed-summary">1 qualifier · 6167 S Elati Ct · livability 80 · baths &amp; space clear upgrade bar</p>
+              <hr class="feed-divider" />
+              <p class="feed-body collapsed" data-feed-body>
+                One qualifier: 6167 S Elati Ct, Littleton — 4/3, livability 80 at $1.1M. Expensive vs rent; kept because space and baths clear the family upgrade bar.
+              </p>
+              <button type="button" class="feed-more" data-feed-more>See more</button>
+              <div class="feed-actions">
+                <button type="button" class="feed-chat" data-goto-opps='{"digest":"denver-2026-07-30"}'>
+                  <svg viewBox="0 0 24 24"><path d="M5 6h14v10H9l-4 3V6z"/></svg>
+                  View opportunities
+                </button>
+                <button type="button" class="feed-link" data-analyze="6167 S Elati Ct, Littleton CO">Analyze top find</button>
+              </div>
+            </article>
+
+            <article class="feed-card">
+              <div class="feed-card-title-row">
+                <p class="feed-title">NW Arkansas — daily digest</p>
+              </div>
+              <div class="feed-meta">
+                <span class="feed-date">7/30/2026</span>
+                <span class="pill pill-muted">2 MLS cleared</span>
+              </div>
+              <p class="feed-summary">J Street Strong · Olive St Interesting · guest filter applied</p>
+              <hr class="feed-divider" />
+              <p class="feed-body collapsed" data-feed-body>
+                Two MLS listings cleared composite 75 after the guest filter — J Street (Strong, 81+) and Olive St (Interesting, mid-70s).
+              </p>
+              <button type="button" class="feed-more" data-feed-more>See more</button>
+              <div class="feed-actions">
+                <button type="button" class="feed-chat" data-goto-opps='{"digest":"arkansas-2026-07-30"}'>
+                  <svg viewBox="0 0 24 24"><path d="M5 6h14v10H9l-4 3V6z"/></svg>
+                  View opportunities
+                </button>
+                <button type="button" class="feed-link" data-analyze="1842 SE J Street, Bentonville AR">Analyze top find</button>
+              </div>
+            </article>
+          </section>
+
+          <!-- OPPORTUNITIES -->
+          <section id="page-opportunities" class="page wide">
+            <div class="anno">
+              <span class="q">?</span>
+              <span>Address opens the live listing (Redfin / Auction.com). <strong>More</strong> expands the blurb. Stars + Note rate it; Analyze opens the memo. Platform bugs → sidebar <strong>Give feedback</strong>.</span>
+            </div>
+
+            <div class="cohort-banner" id="cohort-banner">
+              <span id="cohort-text">Showing digest cohort</span>
+              <button type="button" class="btn btn-ghost" id="btn-clear-cohort">Show all listings</button>
+            </div>
+
+            <div class="filter-shelf" id="filter-shelf">
+              <button type="button" class="filter-shelf-toggle" id="btn-filter-shelf" aria-expanded="false" aria-controls="filter-bar">
+                <span>Filters &amp; sort</span>
+                <span class="summary" id="filter-summary">All · score ↓</span>
+                <span class="chev" aria-hidden="true">▼</span>
+              </button>
+              <div class="filter-bar" id="filter-bar">
+                <div class="filter-toolbar" id="filter-toolbar">
+                  <!-- quick filters rendered by JS -->
+                </div>
+                <p class="filter-hint">Open a filter · adjust checkboxes · Apply that filter only. Clear all restores full inventory.</p>
+              </div>
+            </div>
+
+            <div class="tag-legend" title="How to read a row">
+              <span><strong>Score</strong> — Strong ≥80 · Interesting 55–79 · Pass &lt;55</span>
+              <span><strong>Address</strong> — listing page in the live product (preview shows a note)</span>
+              <span><strong>Meta</strong> — beds · source · market · flags</span>
+              <span><strong>More</strong> — expands the one-line blurb</span>
+            </div>
+
+            <div class="results-meta">
+              <span id="results-count">Showing 0 properties</span>
+              <span>Default sort: score descending</span>
+            </div>
+
+            <div id="opp-list">
+              <article class="opp" data-id="downing" data-digest="denver-2026-07-31" data-market="denver" data-source="mls" data-active="active" data-score="interesting" data-beds="5" data-baths="4" data-price="850000" data-location="Centennial" data-composite="65" data-date="2026-07-31">
+                <div class="opp-row">
+                  <span class="opp-num" aria-hidden="true">1</span>
+                  <div class="opp-score" data-bucket="interesting" title="Interesting · composite 65">65</div>
+                  <div class="opp-main">
+                    <div class="opp-top">
+                      <div class="opp-addr-row"><a class="opp-addr" href="https://www.redfin.com/CO/Centennial/7314-S-Downing-Cir-W" target="_blank" rel="noopener noreferrer" aria-label="Open 7314 S Downing Cir W, Centennial on Redfin">7314 S Downing Cir W, Centennial<svg class="opp-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg></a></div>
+                      <span class="opp-price">$850K</span>
+                    </div>
+                    <p class="opp-meta">5 bd / 4 ba · Redfin · Denver · Jul 31</p>
+                    <div class="opp-exec-wrap">
+                      <p class="opp-exec">Five-bed Centennial upgrade with livability in the high 80s — clears baths and distance vs the family’s current Denver home. Cash flow is ugly at 7%; this is a “will we live here?” call.</p>
+                      <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
+                    </div>
+                  </div>
+                  <div class="opp-side">
+                    <div class="rating-block" data-rating-for="downing"></div>
+                    <div class="opp-actions">
+                      <button type="button" class="btn btn-primary" data-analyze="7314 S Downing Cir W, Centennial CO">Analyze</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="opp-note" data-note-for="downing"></div>
+              </article>
+
+              <article class="opp" data-id="davies" data-digest="denver-2026-07-31" data-market="denver" data-source="mls" data-active="active" data-score="interesting" data-beds="5" data-baths="3" data-price="1000000" data-location="Centennial" data-composite="59" data-date="2026-07-31">
+                <div class="opp-row">
+                  <span class="opp-num" aria-hidden="true">2</span>
+                  <div class="opp-score" data-bucket="interesting" title="Interesting · composite 59">59</div>
+                  <div class="opp-main">
+                    <div class="opp-top">
+                      <div class="opp-addr-row"><a class="opp-addr" href="https://www.redfin.com/CO/Centennial/3532-E-Davies-Pl" target="_blank" rel="noopener noreferrer" aria-label="Open 3532 E Davies Pl, Centennial on Redfin">3532 E Davies Pl, Centennial<svg class="opp-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg></a></div>
+                      <span class="opp-price">$1M</span>
+                    </div>
+                    <p class="opp-meta">5 bd / 3 ba · Redfin · Denver · Jul 31</p>
+                    <div class="opp-exec-wrap">
+                      <p class="opp-exec">Million-dollar Centennial five-bed; livability strong, investment weak. Keep only if the floor plan is enough of an upgrade to justify the payment.</p>
+                      <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
+                    </div>
+                  </div>
+                  <div class="opp-side">
+                    <div class="rating-block" data-rating-for="davies"></div>
+                    <div class="opp-actions">
+                      <button type="button" class="btn btn-primary" data-analyze="3532 E Davies Pl, Centennial CO">Analyze</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="opp-note" data-note-for="davies"></div>
+              </article>
+
+              <article class="opp" data-id="elati" data-digest="denver-2026-07-30" data-market="denver" data-source="mls" data-active="active" data-score="interesting" data-beds="4" data-baths="3" data-price="1099000" data-location="Littleton" data-composite="55" data-date="2026-07-30">
+                <div class="opp-row">
+                  <span class="opp-num" aria-hidden="true">3</span>
+                  <div class="opp-score" data-bucket="interesting" title="Interesting · composite 55">55</div>
+                  <div class="opp-main">
+                    <div class="opp-top">
+                      <div class="opp-addr-row"><a class="opp-addr" href="https://www.redfin.com/CO/Littleton/6167-S-Elati-Ct" target="_blank" rel="noopener noreferrer" aria-label="Open 6167 S Elati Ct, Littleton on Redfin">6167 S Elati Ct, Littleton<svg class="opp-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg></a></div>
+                      <span class="opp-price">$1.1M</span>
+                    </div>
+                    <p class="opp-meta">4 bd / 3 ba · Redfin · Denver · Jul 30</p>
+                    <div class="opp-exec-wrap">
+                      <p class="opp-exec">Yesterday’s Denver qualifier — space and baths clear; price stretches the box.</p>
+                      <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
+                    </div>
+                  </div>
+                  <div class="opp-side">
+                    <div class="rating-block" data-rating-for="elati"></div>
+                    <div class="opp-actions">
+                      <button type="button" class="btn btn-primary" data-analyze="6167 S Elati Ct, Littleton CO">Analyze</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="opp-note" data-note-for="elati"></div>
+              </article>
+
+              <article class="opp" data-id="cherry" data-digest="denver-2026-07-29" data-market="denver" data-source="mls" data-active="inactive" data-score="interesting" data-beds="5" data-baths="4" data-price="685000" data-location="Centennial" data-composite="56" data-date="2026-07-29">
+                <div class="opp-row">
+                  <span class="opp-num" aria-hidden="true">4</span>
+                  <div class="opp-score" data-bucket="interesting" title="Interesting · composite 56">56</div>
+                  <div class="opp-main">
+                    <div class="opp-top">
+                      <div class="opp-addr-row"><p class="opp-addr is-inactive">6218 S Cherry Cir, Centennial</p></div>
+                      <span class="opp-price">$685K</span>
+                    </div>
+                    <p class="opp-meta">5 bd / 4 ba · Redfin · Denver · Inactive · Jul 29</p>
+                    <div class="opp-exec-wrap">
+                      <p class="opp-exec">Was a strong relative value at $685K; kept for history / comps.</p>
+                      <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
+                    </div>
+                  </div>
+                  <div class="opp-side">
+                    <div class="rating-block" data-rating-for="cherry"></div>
+                    <div class="opp-actions">
+                      <button type="button" class="btn btn-primary" data-analyze="6218 S Cherry Cir, Centennial CO">Analyze</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="opp-note" data-note-for="cherry"></div>
+              </article>
+
+              <article class="opp" data-id="jstreet" data-digest="arkansas-2026-07-30" data-market="arkansas" data-source="mls" data-active="active" data-score="strong" data-beds="4" data-baths="3" data-price="485000" data-location="Bentonville" data-composite="81" data-date="2026-07-30">
+                <div class="opp-row">
+                  <span class="opp-num" aria-hidden="true">5</span>
+                  <div class="opp-score" data-bucket="strong" title="Strong · composite 81">81</div>
+                  <div class="opp-main">
+                    <div class="opp-top">
+                      <div class="opp-addr-row"><a class="opp-addr" href="https://www.redfin.com/AR/Bentonville/1842-SE-J-St" target="_blank" rel="noopener noreferrer" aria-label="Open 1842 SE J Street, Bentonville on Redfin">1842 SE J Street, Bentonville<svg class="opp-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg></a></div>
+                      <span class="opp-price">$485K</span>
+                    </div>
+                    <p class="opp-meta">4 bd / 3 ba · Redfin · Arkansas · Jul 30</p>
+                    <div class="opp-exec-wrap">
+                      <p class="opp-exec">Trail-adjacent Bentonville four-bed — guest appeal carries a Strong bucket. Cash-buy STR shortlist if interior is guest-ready.</p>
+                      <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
+                    </div>
+                  </div>
+                  <div class="opp-side">
+                    <div class="rating-block" data-rating-for="jstreet"></div>
+                    <div class="opp-actions">
+                      <button type="button" class="btn btn-primary" data-analyze="1842 SE J Street, Bentonville AR">Analyze</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="opp-note" data-note-for="jstreet"></div>
+              </article>
+
+              <article class="opp" data-id="olive" data-digest="arkansas-2026-07-30" data-market="arkansas" data-source="mls" data-active="active" data-score="interesting" data-beds="3" data-baths="2" data-price="392000" data-location="Rogers" data-composite="76" data-date="2026-07-30">
+                <div class="opp-row">
+                  <span class="opp-num" aria-hidden="true">6</span>
+                  <div class="opp-score" data-bucket="interesting" title="Interesting · composite 76">76</div>
+                  <div class="opp-main">
+                    <div class="opp-top">
+                      <div class="opp-addr-row"><a class="opp-addr" href="https://www.redfin.com/AR/Rogers/912-W-Olive-St" target="_blank" rel="noopener noreferrer" aria-label="Open 912 W Olive St, Rogers on Redfin">912 W Olive St, Rogers<svg class="opp-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg></a></div>
+                      <span class="opp-price">$392K</span>
+                    </div>
+                    <p class="opp-meta">3 bd / 2 ba · Redfin · Arkansas · Jul 30</p>
+                    <div class="opp-exec-wrap">
+                      <p class="opp-exec">Lower entry than Bentonville; guest score clears the Arkansas floor but isn’t a slam dunk.</p>
+                      <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
+                    </div>
+                  </div>
+                  <div class="opp-side">
+                    <div class="rating-block" data-rating-for="olive"></div>
+                    <div class="opp-actions">
+                      <button type="button" class="btn btn-primary" data-analyze="912 W Olive St, Rogers AR">Analyze</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="opp-note" data-note-for="olive"></div>
+              </article>
+
+              <article class="opp" data-id="layton" data-digest="arkansas-2026-07-31" data-market="arkansas" data-source="auction" data-active="active" data-score="interesting" data-beds="3" data-baths="2" data-price="335120" data-location="Bentonville" data-composite="64" data-date="2026-07-31">
+                <div class="opp-row">
+                  <span class="opp-num" aria-hidden="true">7</span>
+                  <div class="opp-score" data-bucket="interesting" title="Interesting · composite 64">64</div>
+                  <div class="opp-main">
+                    <div class="opp-top">
+                      <div class="opp-addr-row"><a class="opp-addr" href="https://www.auction.com/details/4305-sw-layton-road-bentonville-ar" target="_blank" rel="noopener noreferrer" aria-label="Open 4305 SW Layton Road, Bentonville on Auction.com">4305 SW Layton Road, Bentonville<svg class="opp-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg></a></div>
+                      <span class="opp-price">$335K</span>
+                    </div>
+                    <p class="opp-meta">3 bd / 2 ba · Auction.com · Arkansas · Needs price · Jul 31</p>
+                    <div class="opp-exec-wrap">
+                      <p class="opp-exec">Bentonville foreclosure with stress PASS. Confirm hammer + all-in; Analyze needs a price override.</p>
+                      <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
+                    </div>
+                  </div>
+                  <div class="opp-side">
+                    <div class="rating-block" data-rating-for="layton"></div>
+                    <div class="opp-actions">
+                      <button type="button" class="btn btn-primary" data-analyze="4305 SW Layton Road, Bentonville AR" data-needs-price="1">Analyze</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="opp-note" data-note-for="layton"></div>
+              </article>
+
+              <article class="opp" data-id="arrowwood" data-digest="arkansas-2026-07-31" data-market="arkansas" data-source="auction" data-active="active" data-score="interesting" data-beds="3" data-baths="2" data-price="132173" data-location="Siloam Springs" data-composite="64" data-date="2026-07-31">
+                <div class="opp-row">
+                  <span class="opp-num" aria-hidden="true">8</span>
+                  <div class="opp-score" data-bucket="interesting" title="Interesting · composite 64">64</div>
+                  <div class="opp-main">
+                    <div class="opp-top">
+                      <div class="opp-addr-row"><a class="opp-addr" href="https://www.auction.com/details/1000-arrowwood-ln-siloam-springs-ar" target="_blank" rel="noopener noreferrer" aria-label="Open 1000 Arrowwood Ln, Siloam Springs on Auction.com">1000 Arrowwood Ln, Siloam Springs<svg class="opp-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg></a></div>
+                      <span class="opp-price">$132K</span>
+                    </div>
+                    <p class="opp-meta">3 bd / 2 ba · Auction.com · Arkansas · Jul 31</p>
+                    <div class="opp-exec-wrap">
+                      <p class="opp-exec">Lowest check-size auction. CoC looks great on paper — diligence drive-time vs Bentonville trail demand.</p>
+                      <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
+                    </div>
+                  </div>
+                  <div class="opp-side">
+                    <div class="rating-block" data-rating-for="arrowwood"></div>
+                    <div class="opp-actions">
+                      <button type="button" class="btn btn-primary" data-analyze="1000 Arrowwood Ln, Siloam Springs AR">Analyze</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="opp-note" data-note-for="arrowwood"></div>
+              </article>
+
+              <article class="opp" data-id="julletta" data-digest="arkansas-2026-07-31" data-market="arkansas" data-source="auction" data-active="active" data-score="interesting" data-beds="3" data-baths="2" data-price="135634" data-location="Bella Vista" data-composite="64" data-date="2026-07-31">
+                <div class="opp-row">
+                  <span class="opp-num" aria-hidden="true">9</span>
+                  <div class="opp-score" data-bucket="interesting" title="Interesting · composite 64">64</div>
+                  <div class="opp-main">
+                    <div class="opp-top">
+                      <div class="opp-addr-row"><a class="opp-addr" href="https://www.auction.com/details/1-julletta-circle-bella-vista-ar" target="_blank" rel="noopener noreferrer" aria-label="Open 1 Julletta Circle, Bella Vista on Auction.com">1 Julletta Circle, Bella Vista<svg class="opp-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg></a></div>
+                      <span class="opp-price">$136K</span>
+                    </div>
+                    <p class="opp-meta">3 bd / 2 ba · Auction.com · Arkansas · Jul 31</p>
+                    <div class="opp-exec-wrap">
+                      <p class="opp-exec">Fast cosmetic timeline in Bella Vista. Seasonal demand — haircut occupancy vs Bentonville calibration.</p>
+                      <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
+                    </div>
+                  </div>
+                  <div class="opp-side">
+                    <div class="rating-block" data-rating-for="julletta"></div>
+                    <div class="opp-actions">
+                      <button type="button" class="btn btn-primary" data-analyze="1 Julletta Circle, Bella Vista AR">Analyze</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="opp-note" data-note-for="julletta"></div>
+              </article>
+
+              <article class="opp" data-id="cardinal" data-digest="arkansas-2026-07-31" data-market="arkansas" data-source="auction" data-active="active" data-score="interesting" data-beds="3" data-baths="2" data-price="269173" data-location="Springdale" data-composite="64" data-date="2026-07-31">
+                <div class="opp-row">
+                  <span class="opp-num" aria-hidden="true">10</span>
+                  <div class="opp-score" data-bucket="interesting" title="Interesting · composite 64">64</div>
+                  <div class="opp-main">
+                    <div class="opp-top">
+                      <div class="opp-addr-row"><a class="opp-addr" href="https://www.auction.com/details/2480-cardinal-drive-springdale-ar" target="_blank" rel="noopener noreferrer" aria-label="Open 2480 Cardinal Drive, Springdale on Auction.com">2480 Cardinal Drive, Springdale<svg class="opp-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg></a></div>
+                      <span class="opp-price">$269K</span>
+                    </div>
+                    <p class="opp-meta">3 bd / 2 ba · Auction.com · Arkansas · Jul 31</p>
+                    <div class="opp-exec-wrap">
+                      <p class="opp-exec">Mid-pack auction with decent modeled CoC. Outside core trail premium — stress lower occupancy in Analyze.</p>
+                      <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
+                    </div>
+                  </div>
+                  <div class="opp-side">
+                    <div class="rating-block" data-rating-for="cardinal"></div>
+                    <div class="opp-actions">
+                      <button type="button" class="btn btn-primary" data-analyze="2480 Cardinal Drive, Springdale AR">Analyze</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="opp-note" data-note-for="cardinal"></div>
+              </article>
+
+              <article class="opp" data-id="emma" data-digest="arkansas-2026-07-28" data-market="arkansas" data-source="mls" data-active="inactive" data-score="pass" data-beds="3" data-baths="2" data-price="310000" data-location="Springdale" data-composite="48" data-date="2026-07-28">
+                <div class="opp-row">
+                  <span class="opp-num" aria-hidden="true">11</span>
+                  <div class="opp-score" data-bucket="pass" title="Pass · composite 48">48</div>
+                  <div class="opp-main">
+                    <div class="opp-top">
+                      <div class="opp-addr-row"><p class="opp-addr is-inactive">512 E Emma Ave, Springdale</p></div>
+                      <span class="opp-price">$310K</span>
+                    </div>
+                    <p class="opp-meta">3 bd / 2 ba · Redfin · Arkansas · Inactive · Jul 28</p>
+                    <div class="opp-exec-wrap">
+                      <p class="opp-exec">Below the buy box and no longer active — useful as a Pass example when filtering the list.</p>
+                      <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
+                    </div>
+                  </div>
+                  <div class="opp-side">
+                    <div class="rating-block" data-rating-for="emma"></div>
+                    <div class="opp-actions">
+                      <button type="button" class="btn btn-primary" data-analyze="512 E Emma Ave, Springdale AR">Analyze</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="opp-note" data-note-for="emma"></div>
+              </article>
+            </div>
+          </section>
+
+          <!-- ANALYZE -->
+          <section id="page-analyze" class="page wide">
+            <p class="info-banner">Deep dive — same depth as a full deal memo you would save. Digests &amp; Opportunities stay triage-level; this report is the full write-up.</p>
+            <div class="field">
+              <label for="analyze-address">Address</label>
+              <div class="addr-combo">
+                <input id="analyze-address" type="text" autocomplete="off" spellcheck="false"
+                  placeholder="Start typing an address…" aria-autocomplete="list" aria-controls="addr-suggest" aria-expanded="false" />
+                <div id="addr-suggest" class="addr-suggest" role="listbox" hidden></div>
+              </div>
+              <p class="field-hint">Suggestions from your inventory first, then address lookup. Or copy an address from Opportunities and paste here.</p>
+            </div>
+            <details class="overrides" id="overrides-panel">
+              <summary>Fill in missing listing data</summary>
+              <p class="overrides-help">
+                Prairie Peak normally pulls price, beds, baths, and sqft from RentCast / Redfin.
+                Use these fields only when that lookup is incomplete — most often
+                <strong>auction / foreclosure</strong> (no MLS ask), a <strong>blocked detail page</strong>,
+                or when you want to <strong>re-run the memo at a different offer price</strong>.
+                Leave blank if the listing already has good data.
+              </p>
+              <div class="grid-4" style="margin-top:12px">
+                <div class="field">
+                  <label for="ov-price">Ask / bid price ($)</label>
+                  <input id="ov-price" type="number" min="0" step="1000" placeholder="e.g. hammer or offer" />
+                </div>
+                <div class="field">
+                  <label for="ov-beds">Beds</label>
+                  <input id="ov-beds" type="number" min="0" step="1" placeholder="If missing" />
+                </div>
+                <div class="field">
+                  <label for="ov-baths">Baths</label>
+                  <input id="ov-baths" type="number" min="0" step="0.5" placeholder="If missing" />
+                </div>
+                <div class="field">
+                  <label for="ov-sqft">Living sqft</label>
+                  <input id="ov-sqft" type="number" min="0" step="50" placeholder="If missing" />
+                </div>
+              </div>
+            </details>
+            <button type="button" class="btn btn-primary" id="btn-run-analyze">Run analysis</button>
+            <div id="needs-price" class="info-banner warn" style="display:none;margin-top:16px">Enter an ask or bid price above, then run again. Auctions often need this because there is no MLS ask.</div>
+
+            <div id="report-panel" class="report" style="display:none" hidden>
+              <p class="info-banner" style="margin:0 0 14px">Preview sample — layout &amp; sections are real; numbers stay fixed for any address so you can explore the report shape.</p>
+              <p class="report-brand">Prairie Peak · STR deal analysis</p>
+              <h2 id="report-addr">Address</h2>
+              <p class="report-meta">
+                <strong>Price:</strong> $485,000 · 4 bed / 3 bath / 2,180 sqft<br />
+                Condition 78/100 (photo analysis) · Sample memo · NW Arkansas STR desk
+              </p>
+              <div class="report-callout">
+                <strong>Data-backed scenario engine</strong> — property tier: <strong>trail-adjacent</strong>.
+                Rate/occupancy from market benchmarks (not a single calibration multiplier). Sources: Jo calibration + local STR comps · as of 2026-06.
+              </div>
+
+              <div class="score-row">
+                <div class="score-tile"><span class="lbl">Investment</span><span class="val">76</span><span class="sub">/100</span></div>
+                <div class="score-tile"><span class="lbl">Guest appeal</span><span class="val">88</span><span class="sub">/100</span></div>
+                <div class="score-tile"><span class="lbl">Composite</span><span class="val accent">81</span><span class="sub">Strong</span></div>
+                <div class="score-tile"><span class="lbl">Comp validation</span><span class="val">55</span><span class="sub">manual · n=4</span></div>
+              </div>
+
+              <h3>Revenue projection</h3>
+              <table>
+                <thead>
+                  <tr><th>Scenario</th><th>Nightly</th><th>Occ</th><th>Annual rev</th><th>Justification</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Conservative</td>
+                    <td class="num">$180</td>
+                    <td class="num">48%</td>
+                    <td class="num">$31,536</td>
+                    <td>Shoulder-heavy; trail demand soft midweek</td>
+                  </tr>
+                  <tr class="highlight">
+                    <td>Base case</td>
+                    <td class="num">$220</td>
+                    <td class="num">58%</td>
+                    <td class="num">$46,574</td>
+                    <td>Aligned to Jo calibration + trail premium</td>
+                  </tr>
+                  <tr>
+                    <td>Optimistic</td>
+                    <td class="num">$265</td>
+                    <td class="num">68%</td>
+                    <td class="num">$65,777</td>
+                    <td>Peak summer + event weekends</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <h3>Financials</h3>
+              <table>
+                <thead>
+                  <tr><th>Metric</th><th>Cash purchase</th><th>Financed (20% down, 7.0%)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Total cash invested</td><td class="num">$509,250</td><td class="num">$121,250</td></tr>
+                  <tr><td>Annual revenue (base)</td><td class="num">$46,574</td><td class="num">$46,574</td></tr>
+                  <tr><td>Annual expenses</td><td class="num">$24,180</td><td class="num">$24,180</td></tr>
+                  <tr><td>Annual NOI</td><td class="num">$22,394</td><td class="num">$22,394</td></tr>
+                  <tr><td>Mortgage P&amp;I (annual)</td><td class="num">—</td><td class="num">$30,840</td></tr>
+                  <tr><td>Cash-on-cash</td><td class="num">4.4%</td><td class="num">−7.0%</td></tr>
+                  <tr><td>Net yield (NOI/price)</td><td class="num">4.6%</td><td class="num">4.6%</td></tr>
+                </tbody>
+              </table>
+              <p class="report-note">For NW Arkansas STRs we often evaluate <strong>cash purchase</strong> first — financed cash-on-cash can look ugly at 7% even when guest appeal is Strong.</p>
+
+              <h3>Sensitivity (cash purchase)</h3>
+              <table>
+                <thead>
+                  <tr><th>Scenario</th><th>Revenue</th><th>Expenses</th><th>NOI</th><th>CoC</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Conservative</td><td class="num">$31,536</td><td class="num">$20,410</td><td class="num">$11,126</td><td class="num">2.2%</td></tr>
+                  <tr class="highlight"><td>Base case</td><td class="num">$46,574</td><td class="num">$24,180</td><td class="num">$22,394</td><td class="num">4.4%</td></tr>
+                  <tr><td>Optimistic</td><td class="num">$65,777</td><td class="num">$28,940</td><td class="num">$36,837</td><td class="num">7.2%</td></tr>
+                </tbody>
+              </table>
+
+              <h3>Tax signal (cost segregation)</h3>
+              <div class="report-callout">
+                Cost-seg eligible: est. Year 1 depreciation ~$97K (20% of purchase).
+                Bonus ~$72K · Standard ~$25K · requires cost-seg study.
+                STR tax treatment needs avg stay ≤7 days + material participation (750+ hrs/yr).
+              </div>
+
+              <h3>Guest appeal assessment</h3>
+              <ul class="report-list">
+                <li>Trail/Lake proximity: <strong>92/100</strong> <span class="dim">— Oz Trails, 0.4 mi</span></li>
+                <li>Downtown/amenities: <strong>78/100</strong> <span class="dim">— 2.1 mi downtown Bentonville</span></li>
+                <li>Property character / Instagrammability: <strong>84/100</strong></li>
+                <li>Outdoor space: <strong>80/100</strong> <span class="dim">— patio, fenced yard</span></li>
+                <li>Guest capacity (sleeps ~8): <strong>85/100</strong></li>
+                <li>Parking/bike storage: <strong>70/100</strong></li>
+              </ul>
+
+              <h3>Photo condition assessment</h3>
+              <ul class="report-list">
+                <li><strong>Overall:</strong> Good (78/100)</li>
+                <li><strong>Kitchen:</strong> Updated — quartz, newer appliances</li>
+                <li><strong>Bathrooms:</strong> Average+ — primary remodeled; hall bath dated tile</li>
+                <li><strong>Yard:</strong> Usable, low landscaping drama</li>
+                <li><strong>Red flags:</strong> none noted</li>
+                <li><strong>Standouts:</strong> trail access, open living, natural light</li>
+              </ul>
+
+              <h3>Key questions before offering</h3>
+              <ul class="report-list">
+                <li>Confirm HOA / city STR permit path for this parcel.</li>
+                <li>Verify PM nightly rate quote vs $220 base assumption.</li>
+                <li>Walk primary bath — is hall bath a guest-score drag?</li>
+                <li>Cash vs finance: does Jo/Geoff want CoC on cash basis only?</li>
+              </ul>
+
+              <h3>Schools</h3>
+              <ul class="report-list">
+                <li>Sugar Creek Elementary (K–4) — GreatSchools 8/10, 1.2 mi</li>
+                <li>Old High Middle (5–6) — GreatSchools 7/10, 2.4 mi</li>
+              </ul>
+
+              <h3>Notes &amp; caveats</h3>
+              <ul class="report-list">
+                <li>Revenue uses the <strong>data-backed scenario engine</strong> (tier + benchmarks). No live AirDNA API yet — freshness = last manual refresh.</li>
+                <li>HOA and garage fields are best-effort from the listing page — verify before offer.</li>
+                <li>Resolved via: RentCast + Redfin (mock sample).</li>
+              </ul>
+
+              <div class="btn-row" style="margin-top:18px">
+                <button type="button" class="btn btn-primary" id="btn-save-artifact">Save to My Artifacts</button>
+                <button type="button" class="btn btn-ghost" id="btn-download-pdf-report">Download PDF</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- MY ARTIFACTS -->
+          <section id="page-artifacts" class="page wide">
+            <p class="info-banner">Saved deal analyses (and later other outputs). Organize into folders — Geoff &amp; Jo own this library.</p>
+            <div class="artifacts-layout">
+              <aside class="artifacts-folders">
+                <h3>Folders</h3>
+                <div id="folder-list"></div>
+                <div class="folder-actions">
+                  <button type="button" class="btn btn-ghost" id="btn-new-folder" style="width:100%">New folder</button>
+                </div>
+              </aside>
+              <div>
+                <div class="results-meta" style="margin-top:0">
+                  <span id="artifacts-heading">All artifacts</span>
+                  <span id="artifacts-count">0 items</span>
+                </div>
+                <ul class="artifacts-list" id="artifacts-list"></ul>
+                <div class="artifacts-empty" id="artifacts-empty" hidden>No artifacts in this folder yet. Run Analyze → Save to My Artifacts.</div>
+                <div id="artifact-detail" class="report" style="display:none" hidden>
+                  <div id="artifact-detail-content"></div>
+                  <div class="btn-row">
+                    <button type="button" class="btn btn-primary" id="btn-download-pdf-artifact">Download PDF</button>
+                    <button type="button" class="btn btn-ghost" id="btn-close-artifact">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product tour -->
+  <div class="tour-backdrop" id="tour-modal" role="dialog" aria-modal="true" aria-labelledby="tour-title">
+    <div class="tour-card">
+      <button type="button" class="tour-skip" id="btn-tour-skip">Skip</button>
+      <div class="tour-viz" id="tour-viz" aria-hidden="true"></div>
+      <div class="tour-body">
+        <p class="tour-kicker" id="tour-kicker">Welcome</p>
+        <h2 id="tour-title">Title</h2>
+        <div id="tour-copy"></div>
+      </div>
+      <div class="tour-footer">
+        <button type="button" class="btn btn-ghost btn-tour-back" id="btn-tour-back" hidden>Back</button>
+        <div class="tour-dots" id="tour-dots" aria-label="Tour progress"></div>
+        <button type="button" class="btn btn-primary btn-tour-next" id="btn-tour-next">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Platform feedback modal -->
+  <div class="modal-backdrop" id="platform-modal" role="dialog" aria-modal="true" aria-labelledby="platform-modal-title">
+    <div class="modal">
+      <h2 id="platform-modal-title">Give feedback</h2>
+      <p class="modal-sub">Bugs, feature ideas, and anything about Prairie Peak itself — not a specific listing.</p>
+      <div class="field">
+        <label for="pf-type">Type</label>
+        <select id="pf-type">
+          <option value="bug">Bug</option>
+          <option value="feature">Feature request</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="pf-message">Message</label>
+        <textarea id="pf-message" rows="4" placeholder="What happened / what would you like?"></textarea>
+      </div>
+      <div class="field">
+        <label for="pf-name">Your name (optional)</label>
+        <input id="pf-name" type="text" placeholder="Jo / Geoff / Haley" />
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="btn-platform-cancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btn-platform-submit">Send</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast-fixed" id="platform-toast">Thanks — in the live app this emails Grant. Appreciate you testing the flow.</div>
+
+  <!-- Save to My Artifacts modal -->
+  <div class="modal-backdrop" id="save-artifact-modal" role="dialog" aria-modal="true" aria-labelledby="save-artifact-title">
+    <div class="modal">
+      <h2 id="save-artifact-title">Save to My Artifacts</h2>
+      <p class="modal-sub">Name this analysis and choose where it lives.</p>
+      <div class="field">
+        <label for="sa-name">Name</label>
+        <input id="sa-name" type="text" placeholder="e.g. Layton Rd — auction base case" />
+      </div>
+      <div class="field">
+        <label for="sa-folder">Folder</label>
+        <select id="sa-folder"></select>
+      </div>
+      <div class="field" id="sa-new-folder-wrap" hidden>
+        <label for="sa-new-folder">New folder name</label>
+        <input id="sa-new-folder" type="text" placeholder="e.g. Shortlist — Bentonville" />
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="btn-save-artifact-cancel">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btn-save-artifact-confirm">Save</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast-fixed" id="artifact-toast">Saved to My Artifacts</div>
+  <div class="toast-fixed" id="copy-toast">Address copied</div>
+
+  <script>
+    (function () {
+      var RATING_KEY = "investor-hub-mock-ratings-v2";
+      var DIGEST_LABELS = {
+        "denver-2026-07-31": "Denver digest · Jul 31 (2 listings)",
+        "arkansas-2026-07-31": "Arkansas digest · Jul 31 (4 auctions)",
+        "denver-2026-07-30": "Denver digest · Jul 30 (1 listing)",
+        "arkansas-2026-07-30": "Arkansas digest · Jul 30 (2 MLS)",
+        "denver-2026-07-29": "Denver · Jul 29",
+        "arkansas-2026-07-28": "Arkansas · Jul 28",
+      };
+
+      var login = document.getElementById("view-login");
+      var app = document.getElementById("view-app");
+      var addressInput = document.getElementById("analyze-address");
+      var reportPanel = document.getElementById("report-panel");
+      var needsPrice = document.getElementById("needs-price");
+      var overridesPanel = document.getElementById("overrides-panel");
+      var topTitle = document.getElementById("topbar-title");
+      var topMeta = document.getElementById("topbar-meta");
+      var list = document.getElementById("opp-list");
+      var cohortBanner = document.getElementById("cohort-banner");
+      var cohortText = document.getElementById("cohort-text");
+      var platformModal = document.getElementById("platform-modal");
+      var shell = document.getElementById("shell");
+      var navScrim = document.getElementById("nav-scrim");
+      var btnNavToggle = document.getElementById("btn-nav-toggle");
+      var pendingNeedsPrice = false;
+      var activeDigest = null;
+
+      function showToast(id, msg) {
+        var toast = document.getElementById(id);
+        if (!toast) return;
+        if (msg) toast.textContent = msg;
+        toast.classList.add("show");
+        setTimeout(function () { toast.classList.remove("show"); }, 2000);
+      }
+
+      function copyText(text) {
+        function ok() { showToast("copy-toast", "Address copied"); }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(ok).catch(function () {
+            fallbackCopy(text); ok();
+          });
+        } else {
+          fallbackCopy(text); ok();
+        }
+      }
+
+      function fallbackCopy(text) {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "absolute";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); } catch (e) { /* ignore */ }
+        document.body.removeChild(ta);
+      }
+
+      var COPY_ICON =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
+        '<rect x="9" y="9" width="13" height="13" rx="2"></rect>' +
+        '<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>' +
+        "</svg>";
+
+      function wireOpportunityCopyButtons() {
+        document.querySelectorAll("#opp-list .opp").forEach(function (card) {
+          var addrEl = card.querySelector(".opp-addr");
+          var analyzeBtn = card.querySelector("[data-analyze]");
+          if (!addrEl) return;
+          var row = addrEl.parentElement;
+          if (!row || !row.classList.contains("opp-addr-row")) {
+            row = document.createElement("div");
+            row.className = "opp-addr-row";
+            addrEl.parentNode.insertBefore(row, addrEl);
+            row.appendChild(addrEl);
+          }
+          if (row.querySelector(".copy-addr-btn")) return;
+          var full = (analyzeBtn && analyzeBtn.getAttribute("data-analyze")) ||
+            (addrEl.getAttribute("aria-label") || addrEl.textContent || "").replace(/^Open\s+/i, "").replace(/\s+on\s+(Redfin|Auction\.com)$/i, "").trim() ||
+            addrEl.textContent.trim();
+          // Prefer clean street line from textContent without SVG noise
+          if (addrEl.childNodes.length) {
+            var parts = [];
+            addrEl.childNodes.forEach(function (n) {
+              if (n.nodeType === 3) parts.push(n.textContent);
+            });
+            var plain = parts.join("").trim();
+            if (plain) full = (analyzeBtn && analyzeBtn.getAttribute("data-analyze")) || plain;
+          }
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "copy-addr-btn";
+          btn.title = "Copy address";
+          btn.setAttribute("aria-label", "Copy address");
+          btn.innerHTML = COPY_ICON;
+          btn.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            copyText(full);
+          });
+          row.appendChild(btn);
+        });
+      }
+
+      function wireOpportunitySummaryToggles() {
+        document.querySelectorAll("#opp-list .opp").forEach(function (card) {
+          var exec = card.querySelector(".opp-exec");
+          var btn = card.querySelector("[data-toggle-summary]");
+          if (!exec || !btn || btn.dataset.wired === "1") {
+            // Still refresh overflow visibility when already wired
+            if (exec && btn && btn.dataset.wired === "1") {
+              updateSummaryOverflow(card, exec, btn);
+            }
+            return;
+          }
+          btn.dataset.wired = "1";
+          btn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            var open = card.classList.toggle("is-summary-open");
+            btn.textContent = open ? "Less" : "More";
+            btn.setAttribute("aria-expanded", open ? "true" : "false");
+          });
+          updateSummaryOverflow(card, exec, btn);
+        });
+      }
+
+      function updateSummaryOverflow(card, exec, btn) {
+        var wasOpen = card.classList.contains("is-summary-open");
+        // Measure clamped overflow
+        card.classList.remove("is-summary-open");
+        var overflowing = exec.scrollHeight > exec.clientHeight + 1;
+        if (wasOpen) card.classList.add("is-summary-open");
+        btn.hidden = !overflowing && !wasOpen;
+        if (!overflowing && !wasOpen) {
+          btn.textContent = "More";
+          btn.setAttribute("aria-expanded", "false");
+        } else if (wasOpen) {
+          btn.hidden = false;
+          btn.textContent = "Less";
+          btn.setAttribute("aria-expanded", "true");
+        } else {
+          btn.textContent = "More";
+          btn.setAttribute("aria-expanded", "false");
+        }
+      }
+
+      /* Inventory + a few off-list addresses so Analyze search feels like real lookup */
+      var LOOKUP_ADDRESSES = [
+        { address: "701 E Bates Ave, Englewood CO", hint: "Address lookup · Denver metro", source: "lookup" },
+        { address: "2203 SE 14th St, Bentonville AR", hint: "Address lookup · NWA", source: "lookup" },
+        { address: "Chestnut Dr, Beaver Lake AR", hint: "Address lookup · lakefront (partial)", source: "lookup" },
+        { address: "512 W Walnut St, Rogers AR", hint: "Address lookup · NWA", source: "lookup" },
+        { address: "8900 E Orchard Rd, Greenwood Village CO", hint: "Address lookup · Denver metro", source: "lookup" },
+      ];
+
+      function inventoryAddresses() {
+        var seen = {};
+        var out = [];
+        document.querySelectorAll("#opp-list [data-analyze]").forEach(function (btn) {
+          var a = btn.getAttribute("data-analyze");
+          if (!a || seen[a]) return;
+          seen[a] = true;
+          var card = btn.closest(".opp");
+          var market = card ? card.getAttribute("data-market") : "";
+          var loc = card ? card.getAttribute("data-location") : "";
+          out.push({
+            address: a,
+            hint: "In inventory" + (loc ? " · " + loc : "") + (market === "arkansas" ? " · NWA" : market === "denver" ? " · Denver" : ""),
+            source: "inventory",
+            needsPrice: btn.getAttribute("data-needs-price") === "1",
+          });
+        });
+        return out;
+      }
+
+      function allAddressSuggestions() {
+        return inventoryAddresses().concat(LOOKUP_ADDRESSES);
+      }
+
+      function filterAddressSuggestions(q) {
+        q = (q || "").trim().toLowerCase();
+        var all = allAddressSuggestions();
+        if (!q) return all.slice(0, 8);
+        var scored = all.map(function (item) {
+          var a = item.address.toLowerCase();
+          var score = a.indexOf(q);
+          if (score < 0) {
+            var tokens = q.split(/\s+/);
+            var ok = tokens.every(function (t) { return a.indexOf(t) >= 0; });
+            score = ok ? 50 : -1;
+          }
+          return { item: item, score: score };
+        }).filter(function (x) { return x.score >= 0; });
+        scored.sort(function (a, b) {
+          if (a.item.source !== b.item.source) return a.item.source === "inventory" ? -1 : 1;
+          return a.score - b.score;
+        });
+        return scored.map(function (x) { return x.item; }).slice(0, 8);
+      }
+
+      var addrSuggest = document.getElementById("addr-suggest");
+      var addrActiveIdx = -1;
+
+      function closeAddrSuggest() {
+        addrSuggest.classList.remove("open");
+        addrSuggest.hidden = true;
+        addrSuggest.innerHTML = "";
+        addressInput.setAttribute("aria-expanded", "false");
+        addrActiveIdx = -1;
+      }
+
+      function renderAddrSuggest(items) {
+        if (!items.length) {
+          addrSuggest.innerHTML = '<div class="addr-suggest-empty">No matches — keep typing a full street address</div>';
+          addrSuggest.classList.add("open");
+          addrSuggest.hidden = false;
+          addressInput.setAttribute("aria-expanded", "true");
+          addrActiveIdx = -1;
+          return;
+        }
+        var html = "";
+        var lastGroup = "";
+        items.forEach(function (item, i) {
+          var group = item.source === "inventory" ? "Your inventory" : "Address lookup";
+          if (group !== lastGroup) {
+            html += '<div class="addr-suggest-group">' + group + "</div>";
+            lastGroup = group;
+          }
+          html +=
+            '<button type="button" class="addr-suggest-item" role="option" data-idx="' + i + '"' +
+            (item.needsPrice ? ' data-needs-price="1"' : "") +
+            ' data-address="' + item.address.replace(/"/g, "&quot;") + '">' +
+            escapeHtml(item.address) +
+            '<span class="hint">' + escapeHtml(item.hint) + "</span></button>";
+        });
+        addrSuggest.innerHTML = html;
+        addrSuggest.classList.add("open");
+        addrSuggest.hidden = false;
+        addressInput.setAttribute("aria-expanded", "true");
+        addrActiveIdx = -1;
+        addrSuggest.querySelectorAll(".addr-suggest-item").forEach(function (btn) {
+          btn.addEventListener("mousedown", function (e) { e.preventDefault(); });
+          btn.addEventListener("click", function () {
+            pickAddress(btn.getAttribute("data-address"), btn.getAttribute("data-needs-price") === "1");
+          });
+        });
+      }
+
+      function pickAddress(addr, needs) {
+        addressInput.value = addr || "";
+        closeAddrSuggest();
+        pendingNeedsPrice = !!needs;
+        if (needs) {
+          overridesPanel.open = true;
+          showToast("copy-toast", "Needs price — fill in ask/bid below");
+        }
+        addressInput.focus();
+      }
+
+      function openAddrSuggestFromInput() {
+        renderAddrSuggest(filterAddressSuggestions(addressInput.value));
+      }
+
+      function highlightAddrItem(idx) {
+        var items = addrSuggest.querySelectorAll(".addr-suggest-item");
+        items.forEach(function (el, i) {
+          el.classList.toggle("active", i === idx);
+        });
+        addrActiveIdx = idx;
+        if (idx >= 0 && items[idx]) items[idx].scrollIntoView({ block: "nearest" });
+      }
+
+      function wireAddressAutocomplete() {
+        addressInput.addEventListener("input", openAddrSuggestFromInput);
+        addressInput.addEventListener("focus", openAddrSuggestFromInput);
+        addressInput.addEventListener("keydown", function (e) {
+          var items = addrSuggest.querySelectorAll(".addr-suggest-item");
+          var open = addrSuggest.classList.contains("open");
+          if (e.key === "Escape") {
+            closeAddrSuggest();
+            return;
+          }
+          if (!open || !items.length) return;
+          if (e.key === "ArrowDown") {
+            e.preventDefault();
+            highlightAddrItem(Math.min(items.length - 1, addrActiveIdx + 1));
+          } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            highlightAddrItem(Math.max(0, addrActiveIdx - 1));
+          } else if (e.key === "Enter" && addrActiveIdx >= 0) {
+            e.preventDefault();
+            items[addrActiveIdx].click();
+          }
+        });
+        document.addEventListener("click", function (e) {
+          if (!e.target.closest(".addr-combo")) closeAddrSuggest();
+        });
+      }
+
+      function isMobileNav() {
+        return window.matchMedia("(max-width: 900px)").matches;
+      }
+
+      function setNavOpen(open) {
+        shell.classList.toggle("sidebar-open", open);
+        var showScrim = open && isMobileNav();
+        if (navScrim) {
+          navScrim.hidden = !showScrim;
+          navScrim.classList.toggle("show", showScrim);
+        }
+        if (btnNavToggle) {
+          btnNavToggle.setAttribute("aria-expanded", open ? "true" : "false");
+          btnNavToggle.title = open ? "Close navigation" : "Open navigation";
+          btnNavToggle.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+        }
+        try {
+          localStorage.setItem("prairie-peak-sidebar", open ? "open" : "closed");
+        } catch (e) {}
+      }
+      function closeNav() {
+        // Collapse drawer after nav actions on mobile only — keep desktop preference.
+        if (isMobileNav()) setNavOpen(false);
+      }
+      function toggleNav() {
+        setNavOpen(!shell.classList.contains("sidebar-open"));
+      }
+
+      function restoreSidebarPreference() {
+        var stored = null;
+        try { stored = localStorage.getItem("prairie-peak-sidebar"); } catch (e) {}
+        if (stored === "open") setNavOpen(true);
+        else if (stored === "closed") setNavOpen(false);
+        else setNavOpen(!isMobileNav());
+      }
+
+      var titles = {
+        feed: ["Activity feed", "Daily summaries · Jul 31, 2026"],
+        opportunities: ["Opportunities", "All listings · filter & sort"],
+        analyze: ["Analyze", "Standalone deal analyzer"],
+        artifacts: ["My Artifacts", "Saved analyses · organize in folders"],
+      };
+
+      var ARTIFACTS_KEY = "prairie-peak-mock-artifacts-v1";
+      var activeFolderId = "all";
+      var lastAnalyzeAddress = "";
+      var lastAnalyzeHtml = "";
+      var openArtifactId = null;
+      var saveArtifactModal = document.getElementById("save-artifact-modal");
+
+      function defaultArtifactsStore() {
+        var sampleHtml =
+          "<h2>Chestnut Dr · Beaver Lake</h2>" +
+          "<p><strong>Bucket:</strong> Strong · Lakefront STR</p>" +
+          "<p>Base case $500/night @ 58% occ. Dock premium applied. Jo’s VRBO comps in band.</p>" +
+          "<h3>STR stress test</h3>" +
+          "<table><thead><tr><th>Scenario</th><th>Rate</th><th>Occ</th><th>Mo. CF</th><th>CoC</th></tr></thead>" +
+          "<tbody><tr><td>Conservative</td><td>$400</td><td>55%</td><td>+$2,100</td><td>5.0%</td></tr>" +
+          "<tr><td>Base case</td><td>$500</td><td>58%</td><td>+$3,200</td><td>7.7%</td></tr>" +
+          "<tr><td>Optimistic</td><td>$550</td><td>65%</td><td>+$4,100</td><td>9.8%</td></tr></tbody></table>" +
+          "<p><strong>Verdict:</strong> PASS</p>";
+        return {
+          folders: [
+            { id: "inbox", name: "Inbox" },
+            { id: "shortlist", name: "Shortlist" },
+            { id: "passed", name: "Passed" },
+          ],
+          items: [
+            {
+              id: "a-chestnut",
+              name: "Chestnut Dr · Beaver Lake",
+              folderId: "shortlist",
+              address: "Chestnut Dr, Beaver Lake AR",
+              type: "analysis",
+              createdAt: "2026-07-30",
+              html: sampleHtml,
+            },
+          ],
+        };
+      }
+      function loadArtifacts() {
+        try {
+          var raw = JSON.parse(localStorage.getItem(ARTIFACTS_KEY) || "null");
+          if (raw && raw.folders && raw.items) return raw;
+        } catch (e) {}
+        var seed = defaultArtifactsStore();
+        localStorage.setItem(ARTIFACTS_KEY, JSON.stringify(seed));
+        return seed;
+      }
+      function saveArtifacts(store) {
+        localStorage.setItem(ARTIFACTS_KEY, JSON.stringify(store));
+      }
+      function folderName(store, id) {
+        var f = store.folders.find(function (x) { return x.id === id; });
+        return f ? f.name : "Inbox";
+      }
+      function uid(prefix) {
+        return prefix + "-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 6);
+      }
+
+      function renderArtifacts() {
+        var store = loadArtifacts();
+        var folderList = document.getElementById("folder-list");
+        var list = document.getElementById("artifacts-list");
+        var empty = document.getElementById("artifacts-empty");
+        if (!folderList || !list) return;
+
+        var counts = { all: store.items.length };
+        store.folders.forEach(function (f) { counts[f.id] = 0; });
+        store.items.forEach(function (it) {
+          counts[it.folderId] = (counts[it.folderId] || 0) + 1;
+        });
+
+        var folderHtml = "";
+        folderHtml += '<button type="button" class="folder-btn' + (activeFolderId === "all" ? " active" : "") + '" data-folder="all">All <span class="count">' + counts.all + "</span></button>";
+        store.folders.forEach(function (f) {
+          folderHtml += '<button type="button" class="folder-btn' + (activeFolderId === f.id ? " active" : "") + '" data-folder="' + f.id + '">' +
+            escapeHtml(f.name) + ' <span class="count">' + (counts[f.id] || 0) + "</span></button>";
+        });
+        folderList.innerHTML = folderHtml;
+        folderList.querySelectorAll("[data-folder]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            activeFolderId = btn.getAttribute("data-folder");
+            renderArtifacts();
+          });
+        });
+
+        var visible = store.items.filter(function (it) {
+          return activeFolderId === "all" || it.folderId === activeFolderId;
+        }).sort(function (a, b) {
+          return a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0;
+        });
+
+        document.getElementById("artifacts-heading").textContent =
+          activeFolderId === "all" ? "All artifacts" : folderName(store, activeFolderId);
+        document.getElementById("artifacts-count").textContent =
+          visible.length + " item" + (visible.length === 1 ? "" : "s");
+
+        if (!visible.length) {
+          list.innerHTML = "";
+          empty.hidden = false;
+        } else {
+          empty.hidden = true;
+          list.innerHTML = visible.map(function (it) {
+            return (
+              '<li data-artifact-id="' + it.id + '">' +
+              '<div class="artifact-top"><div>' +
+              '<p class="name">' + escapeHtml(it.name) + "</p>" +
+              '<p class="when">' + escapeHtml(it.createdAt) + " · " + escapeHtml(folderName(store, it.folderId)) +
+              (it.address ? " · " + escapeHtml(it.address) : "") + "</p>" +
+              "</div></div>" +
+              '<div class="artifact-actions">' +
+              '<button type="button" class="btn btn-ghost" data-open-artifact="' + it.id + '">Open</button>' +
+              '<button type="button" class="btn btn-ghost" data-download-artifact="' + it.id + '">PDF</button>' +
+              '<button type="button" class="btn btn-ghost" data-rename-artifact="' + it.id + '">Rename</button>' +
+              '<button type="button" class="btn btn-ghost" data-move-artifact="' + it.id + '">Move</button>' +
+              '<button type="button" class="btn btn-ghost" data-delete-artifact="' + it.id + '">Delete</button>' +
+              "</div></li>"
+            );
+          }).join("");
+
+          list.querySelectorAll("[data-open-artifact]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              var it = store.items.find(function (x) { return x.id === btn.getAttribute("data-open-artifact"); });
+              if (!it) return;
+              openArtifactId = it.id;
+              var panel = document.getElementById("artifact-detail");
+              var content = document.getElementById("artifact-detail-content");
+              content.innerHTML = it.html || ("<h2>" + escapeHtml(it.name) + "</h2><p>" + escapeHtml(it.body || "") + "</p>");
+              panel.hidden = false;
+              panel.style.display = "block";
+            });
+          });
+          list.querySelectorAll("[data-download-artifact]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              var it = store.items.find(function (x) { return x.id === btn.getAttribute("data-download-artifact"); });
+              if (it) downloadPdf(it.name, it.html || ("<h2>" + escapeHtml(it.name) + "</h2><p>" + escapeHtml(it.body || "") + "</p>"));
+            });
+          });
+          list.querySelectorAll("[data-rename-artifact]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              var id = btn.getAttribute("data-rename-artifact");
+              var s = loadArtifacts();
+              var it = s.items.find(function (x) { return x.id === id; });
+              if (!it) return;
+              var next = prompt("Rename artifact", it.name);
+              if (next && next.trim()) {
+                it.name = next.trim();
+                saveArtifacts(s);
+                renderArtifacts();
+              }
+            });
+          });
+          list.querySelectorAll("[data-move-artifact]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              var id = btn.getAttribute("data-move-artifact");
+              var s = loadArtifacts();
+              var it = s.items.find(function (x) { return x.id === id; });
+              if (!it) return;
+              var names = s.folders.map(function (f, i) { return (i + 1) + ". " + f.name; }).join("\n");
+              var pick = prompt("Move to folder number:\n" + names, "1");
+              var idx = Number(pick) - 1;
+              if (s.folders[idx]) {
+                it.folderId = s.folders[idx].id;
+                saveArtifacts(s);
+                renderArtifacts();
+              }
+            });
+          });
+          list.querySelectorAll("[data-delete-artifact]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              var id = btn.getAttribute("data-delete-artifact");
+              if (!confirm("Delete this artifact?")) return;
+              var s = loadArtifacts();
+              s.items = s.items.filter(function (x) { return x.id !== id; });
+              saveArtifacts(s);
+              renderArtifacts();
+            });
+          });
+        }
+      }
+
+      function populateSaveFolderSelect() {
+        var store = loadArtifacts();
+        var sel = document.getElementById("sa-folder");
+        sel.innerHTML =
+          store.folders.map(function (f) {
+            return '<option value="' + f.id + '">' + escapeHtml(f.name) + "</option>";
+          }).join("") +
+          '<option value="__new__">New folder…</option>';
+        document.getElementById("sa-new-folder-wrap").hidden = true;
+        document.getElementById("sa-new-folder").value = "";
+      }
+
+      function syncNewFolderField() {
+        var isNew = document.getElementById("sa-folder").value === "__new__";
+        document.getElementById("sa-new-folder-wrap").hidden = !isNew;
+        if (isNew) document.getElementById("sa-new-folder").focus();
+      }
+
+      function captureReportHtml() {
+        var panel = document.getElementById("report-panel");
+        if (!panel || panel.hidden) return "";
+        var clone = panel.cloneNode(true);
+        clone.querySelectorAll(".btn-row").forEach(function (el) { el.remove(); });
+        return clone.innerHTML;
+      }
+
+      function downloadPdf(title, html) {
+        var w = window.open("", "_blank");
+        if (!w) {
+          alert("Allow pop-ups to download PDF (print → Save as PDF).");
+          return;
+        }
+        w.document.write(
+          "<!DOCTYPE html><html><head><title>" + escapeHtml(title) + "</title>" +
+          "<style>" +
+          "body{font-family:Georgia,serif;color:#1a2b28;max-width:720px;margin:32px auto;padding:0 20px;line-height:1.5}" +
+          "h2{font-size:22px;border-bottom:2px solid #1f7a6e;padding-bottom:8px}" +
+          "h3{color:#1f7a6e;font-size:16px}" +
+          "table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}" +
+          "th{background:#1a2b28;color:#fff;text-align:left;padding:8px}" +
+          "td{border-bottom:1px solid #d5e0dc;padding:8px}" +
+          ".brand{font-size:12px;color:#849690;margin-bottom:24px;letter-spacing:0.04em}" +
+          "@media print{body{margin:0}}" +
+          "</style></head><body>" +
+          '<div class="brand">PRAIRIE PEAK · Deal analysis</div>' +
+          html +
+          "<script>window.onload=function(){window.print();}<\/script>" +
+          "</body></html>"
+        );
+        w.document.close();
+      }
+
+      function openSaveArtifactModal() {
+        var addr = lastAnalyzeAddress || document.getElementById("analyze-address").value.trim() || "Untitled analysis";
+        lastAnalyzeHtml = captureReportHtml() || lastAnalyzeHtml;
+        document.getElementById("sa-name").value = addr;
+        populateSaveFolderSelect();
+        saveArtifactModal.classList.add("show");
+        document.getElementById("sa-name").focus();
+      }
+      function closeSaveArtifactModal() {
+        saveArtifactModal.classList.remove("show");
+      }
+      function confirmSaveArtifact() {
+        var name = document.getElementById("sa-name").value.trim();
+        if (!name) {
+          document.getElementById("sa-name").focus();
+          return;
+        }
+        var store = loadArtifacts();
+        var folderVal = document.getElementById("sa-folder").value;
+        var folderId = folderVal;
+        if (folderVal === "__new__") {
+          var newFolder = document.getElementById("sa-new-folder").value.trim();
+          if (!newFolder) {
+            document.getElementById("sa-new-folder").focus();
+            return;
+          }
+          folderId = uid("folder");
+          store.folders.push({ id: folderId, name: newFolder });
+        }
+        var addr = lastAnalyzeAddress || document.getElementById("analyze-address").value.trim();
+        var html = lastAnalyzeHtml || captureReportHtml();
+        if (!html) {
+          html = "<h2>" + escapeHtml(name) + "</h2><p>No report body captured — re-run Analyze then save.</p>";
+        } else if (html.indexOf("<h2") === -1) {
+          html = "<h2>" + escapeHtml(name) + "</h2>" + html;
+        }
+        store.items.unshift({
+          id: uid("art"),
+          name: name,
+          folderId: folderId,
+          address: addr,
+          type: "analysis",
+          createdAt: new Date().toISOString().slice(0, 10),
+          html: html,
+        });
+        saveArtifacts(store);
+        closeSaveArtifactModal();
+        activeFolderId = folderId;
+        var toast = document.getElementById("artifact-toast");
+        toast.textContent = "Saved full analysis → " + folderName(store, folderId);
+        toast.classList.add("show");
+        setTimeout(function () { toast.classList.remove("show"); }, 2500);
+        renderArtifacts();
+      }
+
+      function createFolderPrompt() {
+        var name = prompt("New folder name");
+        if (!name || !name.trim()) return;
+        var store = loadArtifacts();
+        var id = uid("folder");
+        store.folders.push({ id: id, name: name.trim() });
+        saveArtifacts(store);
+        activeFolderId = id;
+        renderArtifacts();
+      }
+
+      function loadRatings() {
+        try { return JSON.parse(localStorage.getItem(RATING_KEY) || "{}"); }
+        catch (e) { return {}; }
+      }
+      function saveRatings(map) {
+        localStorage.setItem(RATING_KEY, JSON.stringify(map));
+      }
+      function getEntry(id) {
+        var v = loadRatings()[id];
+        if (!v) return { stars: 0, comment: "" };
+        if (typeof v === "number") return { stars: v, comment: "" };
+        return { stars: Number(v.stars) || 0, comment: v.comment || "" };
+      }
+      function getRating(id) {
+        return getEntry(id).stars;
+      }
+      function setEntry(id, stars, comment) {
+        var map = loadRatings();
+        if (!stars && !(comment && comment.trim())) {
+          delete map[id];
+        } else {
+          map[id] = { stars: stars || 0, comment: (comment || "").trim() };
+        }
+        saveRatings(map);
+      }
+
+      function money(n) {
+        if (n >= 1000000) return "$" + (n / 1000000).toFixed(2).replace(/\.00$/, "") + "M";
+        if (n >= 1000) return "$" + Math.round(n / 1000) + "K";
+        return "$" + n;
+      }
+
+      function escapeHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function renderRatings() {
+        document.querySelectorAll(".rating-block[data-rating-for]").forEach(function (block) {
+          var id = block.getAttribute("data-rating-for");
+          var entry = getEntry(id);
+          var current = entry.stars;
+          var hasNote = !!(entry.comment && entry.comment.trim());
+          var card = block.closest(".opp");
+          var notePanel = card ? card.querySelector('.opp-note[data-note-for="' + id + '"]') : null;
+          var noteOpen = notePanel && notePanel.classList.contains("open");
+
+          var html = '<div class="rating-row">';
+          html += '<div class="stars" role="group" aria-label="Rate listing">';
+          for (var i = 1; i <= 5; i++) {
+            html += '<button type="button" data-star="' + i + '" class="' + (i <= current ? "on" : "") + '" aria-label="' + i + ' stars">★</button>';
+          }
+          html += "</div>";
+          if (current) {
+            html += '<button type="button" class="rating-clear" data-clear="1" title="Clear rating">Clear</button>';
+          }
+          html += '<button type="button" class="rating-note-btn' + (hasNote ? " has-note" : "") + '" data-toggle-note aria-expanded="' + (noteOpen ? "true" : "false") + '">';
+          html += hasNote ? "Note ✓" : "Note";
+          html += "</button>";
+          html += "</div>";
+          block.innerHTML = html;
+
+          if (notePanel) {
+            notePanel.innerHTML =
+              '<textarea data-comment placeholder="Why this rating? Optional note for the family…">' +
+              escapeHtml(entry.comment) +
+              "</textarea>" +
+              '<div class="comment-actions">' +
+              '<button type="button" class="btn btn-ghost" data-save-comment>Save note</button>' +
+              '<button type="button" class="btn btn-ghost" data-close-note>Done</button>' +
+              '<span class="hint">Family note · saved on this device in the preview</span>' +
+              "</div>";
+          }
+
+          block.querySelectorAll("[data-star]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              var stars = Number(btn.getAttribute("data-star"));
+              var comment = notePanel && notePanel.querySelector("[data-comment]")
+                ? notePanel.querySelector("[data-comment]").value
+                : entry.comment;
+              setEntry(id, stars, comment);
+              renderRatings();
+              refreshListFromApplied();
+            });
+          });
+          var clear = block.querySelector("[data-clear]");
+          if (clear) {
+            clear.addEventListener("click", function () {
+              var comment = notePanel && notePanel.querySelector("[data-comment]")
+                ? notePanel.querySelector("[data-comment]").value
+                : entry.comment;
+              setEntry(id, 0, comment);
+              renderRatings();
+              refreshListFromApplied();
+            });
+          }
+          var toggle = block.querySelector("[data-toggle-note]");
+          if (toggle && notePanel) {
+            toggle.addEventListener("click", function () {
+              var open = notePanel.classList.toggle("open");
+              if (card) card.classList.toggle("is-expanded", open);
+              toggle.setAttribute("aria-expanded", open ? "true" : "false");
+              if (open) {
+                var ta = notePanel.querySelector("[data-comment]");
+                if (ta) ta.focus();
+              }
+            });
+          }
+          if (notePanel) {
+            var saveBtn = notePanel.querySelector("[data-save-comment]");
+            if (saveBtn) {
+              saveBtn.addEventListener("click", function () {
+                var comment = notePanel.querySelector("[data-comment]").value || "";
+                setEntry(id, getRating(id), comment);
+                saveBtn.textContent = "Saved";
+                setTimeout(function () { saveBtn.textContent = "Save note"; }, 1200);
+                renderRatings();
+              });
+            }
+            var closeBtn = notePanel.querySelector("[data-close-note]");
+            if (closeBtn) {
+              closeBtn.addEventListener("click", function () {
+                var comment = notePanel.querySelector("[data-comment]").value || "";
+                setEntry(id, getRating(id), comment);
+                notePanel.classList.remove("open");
+                if (card) card.classList.remove("is-expanded");
+                renderRatings();
+              });
+            }
+          }
+        });
+      }
+
+      function openPlatformModal() {
+        closeNav();
+        platformModal.classList.add("show");
+        document.getElementById("pf-message").focus();
+      }
+      function closePlatformModal() {
+        platformModal.classList.remove("show");
+      }
+      function submitPlatformFeedback() {
+        var msg = document.getElementById("pf-message").value.trim();
+        if (!msg) {
+          document.getElementById("pf-message").focus();
+          return;
+        }
+        document.getElementById("pf-message").value = "";
+        document.getElementById("pf-name").value = "";
+        document.getElementById("pf-type").value = "bug";
+        closePlatformModal();
+        var toast = document.getElementById("platform-toast");
+        toast.classList.add("show");
+        setTimeout(function () { toast.classList.remove("show"); }, 2500);
+      }
+
+      function showApp() {
+        login.style.display = "none";
+        app.style.display = "block";
+        restoreSidebarPreference();
+        renderRatings();
+        renderArtifacts();
+        applyFilters();
+      }
+      function showLogin() {
+        app.style.display = "none";
+        login.style.display = "grid";
+        closePlatformModal();
+        closeNav();
+        goNav("feed");
+      }
+
+      function goNav(name, opts) {
+        opts = opts || {};
+        if (name === "feedback") name = "feed";
+        if (name === "history") name = "artifacts";
+        document.querySelectorAll(".nav-btn[data-nav]").forEach(function (b) {
+          b.classList.toggle("active", b.getAttribute("data-nav") === name);
+        });
+        document.querySelectorAll(".page").forEach(function (p) {
+          p.classList.toggle("active", p.id === "page-" + name);
+        });
+        var t = titles[name] || ["Prairie Peak", ""];
+        topTitle.textContent = t[0];
+        topMeta.textContent = t[1];
+
+        if (name === "opportunities" && opts.all) {
+          resetFilters();
+        }
+        if (name === "artifacts") renderArtifacts();
+        closeNav();
+      }
+
+      function openAnalyze(addr, needs) {
+        goNav("analyze");
+        addressInput.value = addr || "";
+        closeAddrSuggest();
+        reportPanel.style.display = "none";
+        reportPanel.hidden = true;
+        needsPrice.style.display = "none";
+        pendingNeedsPrice = !!needs;
+        if (needs) {
+          overridesPanel.open = true;
+          document.getElementById("ov-price").focus();
+        } else {
+          addressInput.focus();
+        }
+      }
+
+      function updateCohortBanner() {
+        if (activeDigest) {
+          cohortBanner.classList.add("show");
+          cohortText.textContent = "Filtered to: " + (DIGEST_LABELS[activeDigest] || activeDigest);
+          topMeta.textContent = "Digest cohort · not full inventory";
+        } else {
+          cohortBanner.classList.remove("show");
+          if (document.getElementById("page-opportunities").classList.contains("active")) {
+            topMeta.textContent = titles.opportunities[1];
+          }
+        }
+      }
+
+      var FILTER_DEFAULTS = {
+        market: ["denver", "arkansas"],
+        source: ["mls", "auction"],
+        active: ["active", "inactive"],
+        score: ["strong", "interesting", "pass"],
+        rating: ["unrated", "5", "4", "3", "2", "1"],
+        location: ["Centennial", "Littleton", "Bentonville", "Rogers", "Bella Vista", "Springdale", "Siloam Springs"],
+        beds: 0,
+        baths: 0,
+        maxPrice: 1200000,
+        sort: "composite-desc",
+      };
+
+      var FILTER_META = {
+        market: {
+          label: "Market",
+          type: "multi",
+          options: [
+            { value: "denver", label: "Denver" },
+            { value: "arkansas", label: "Arkansas (NWA)" },
+          ],
+        },
+        source: {
+          label: "Source",
+          type: "multi",
+          options: [
+            { value: "mls", label: "Redfin" },
+            { value: "auction", label: "Auction" },
+          ],
+        },
+        active: {
+          label: "Status",
+          type: "multi",
+          options: [
+            { value: "active", label: "Active" },
+            { value: "inactive", label: "Inactive" },
+          ],
+        },
+        score: {
+          label: "Score",
+          type: "multi",
+          options: [
+            { value: "strong", label: "Strong" },
+            { value: "interesting", label: "Interesting" },
+            { value: "pass", label: "Pass" },
+          ],
+        },
+        rating: {
+          label: "Rating",
+          type: "multi",
+          options: [
+            { value: "unrated", label: "Unrated" },
+            { value: "5", label: "5★" },
+            { value: "4", label: "4★" },
+            { value: "3", label: "3★" },
+            { value: "2", label: "2★" },
+            { value: "1", label: "1★" },
+          ],
+        },
+        location: {
+          label: "Location",
+          type: "multi",
+          wide: true,
+          options: [
+            { value: "Centennial", label: "Centennial" },
+            { value: "Littleton", label: "Littleton" },
+            { value: "Bentonville", label: "Bentonville" },
+            { value: "Rogers", label: "Rogers" },
+            { value: "Bella Vista", label: "Bella Vista" },
+            { value: "Springdale", label: "Springdale" },
+            { value: "Siloam Springs", label: "Siloam Springs" },
+          ],
+        },
+        beds: {
+          label: "Beds",
+          type: "single",
+          options: [
+            { value: "0", label: "Any" },
+            { value: "3", label: "3+" },
+            { value: "4", label: "4+" },
+            { value: "5", label: "5+" },
+          ],
+        },
+        baths: {
+          label: "Baths",
+          type: "single",
+          options: [
+            { value: "0", label: "Any" },
+            { value: "2", label: "2+" },
+            { value: "3", label: "3+" },
+            { value: "4", label: "4+" },
+          ],
+        },
+        maxPrice: {
+          label: "Max price",
+          type: "range",
+          min: 100000,
+          max: 1200000,
+          step: 25000,
+        },
+        sort: {
+          label: "Sort",
+          type: "select",
+          options: [
+            { value: "composite-desc", label: "Score · high → low" },
+            { value: "composite-asc", label: "Score · low → high" },
+            { value: "price-asc", label: "Price · low → high" },
+            { value: "price-desc", label: "Price · high → low" },
+            { value: "date-desc", label: "Report date · newest" },
+            { value: "date-asc", label: "Report date · oldest" },
+            { value: "rating-desc", label: "Your rating · high → low" },
+          ],
+        },
+      };
+
+      var FILTER_ORDER = ["market", "source", "active", "score", "rating", "location", "beds", "baths", "maxPrice", "sort"];
+      var appliedFilters = cloneFilters(FILTER_DEFAULTS);
+      var filterToolbar = document.getElementById("filter-toolbar");
+
+      function cloneFilters(src) {
+        return {
+          market: src.market.slice(),
+          source: src.source.slice(),
+          active: src.active.slice(),
+          score: src.score.slice(),
+          rating: src.rating.slice(),
+          location: src.location.slice(),
+          beds: src.beds,
+          baths: src.baths,
+          maxPrice: src.maxPrice,
+          sort: src.sort,
+        };
+      }
+
+      function arrEq(x, y) {
+        if (x.length !== y.length) return false;
+        var sx = x.slice().sort();
+        var sy = y.slice().sort();
+        for (var i = 0; i < sx.length; i++) if (sx[i] !== sy[i]) return false;
+        return true;
+      }
+
+      function isFullSelect(selected, all) {
+        return arrEq(selected, all);
+      }
+
+      function optionLabel(key, value) {
+        var meta = FILTER_META[key];
+        if (!meta || !meta.options) return String(value);
+        for (var i = 0; i < meta.options.length; i++) {
+          if (String(meta.options[i].value) === String(value)) return meta.options[i].label;
+        }
+        return String(value);
+      }
+
+      function summarizeFilter(key) {
+        var f = appliedFilters;
+        var def = FILTER_DEFAULTS;
+        if (key === "market" || key === "source" || key === "active" || key === "score" || key === "rating" || key === "location") {
+          if (isFullSelect(f[key], def[key])) return "All";
+          if (!f[key].length) return "None";
+          if (f[key].length === 1) return optionLabel(key, f[key][0]);
+          return f[key].length + " selected";
+        }
+        if (key === "beds") return f.beds === 0 ? "Any" : f.beds + "+";
+        if (key === "baths") return f.baths === 0 ? "Any" : f.baths + "+";
+        if (key === "maxPrice") return f.maxPrice >= def.maxPrice ? "Any" : "≤ " + money(f.maxPrice);
+        if (key === "sort") {
+          var short = {
+            "composite-desc": "Score ↓",
+            "composite-asc": "Score ↑",
+            "price-asc": "Price ↑",
+            "price-desc": "Price ↓",
+            "date-desc": "Newest",
+            "date-asc": "Oldest",
+            "rating-desc": "Rating ↓",
+          };
+          return short[f.sort] || "Score ↓";
+        }
+        return "All";
+      }
+
+      function isFilterActive(key) {
+        var f = appliedFilters;
+        var def = FILTER_DEFAULTS;
+        if (key === "market" || key === "source" || key === "active" || key === "score" || key === "rating" || key === "location") {
+          return !isFullSelect(f[key], def[key]);
+        }
+        if (key === "beds") return f.beds !== def.beds;
+        if (key === "baths") return f.baths !== def.baths;
+        if (key === "maxPrice") return f.maxPrice !== def.maxPrice;
+        if (key === "sort") return f.sort !== def.sort;
+        return false;
+      }
+
+      function updateFilterSummary() {
+        var bits = [];
+        FILTER_ORDER.forEach(function (key) {
+          if (key === "sort") return;
+          if (isFilterActive(key)) bits.push(FILTER_META[key].label + ": " + summarizeFilter(key));
+        });
+        if (activeDigest) bits.push("digest cohort");
+        var el = document.getElementById("filter-summary");
+        if (el) {
+          el.textContent = (bits.length ? bits.join(" · ") + " · " : "All · ") + summarizeFilter("sort");
+        }
+        FILTER_ORDER.forEach(function (key) {
+          var trigger = document.querySelector('.qf[data-key="' + key + '"] .qf-trigger');
+          if (!trigger) return;
+          var val = trigger.querySelector(".qf-value");
+          if (val) val.textContent = summarizeFilter(key);
+          trigger.classList.toggle("active-filter", isFilterActive(key));
+        });
+      }
+
+      function closeAllQuickFilters(exceptKey) {
+        document.querySelectorAll(".qf").forEach(function (el) {
+          if (exceptKey && el.getAttribute("data-key") === exceptKey) return;
+          el.classList.remove("open");
+          var btn = el.querySelector(".qf-trigger");
+          if (btn) btn.setAttribute("aria-expanded", "false");
+        });
+      }
+
+      function readDraftFromPanel(key) {
+        var panel = document.querySelector('.qf[data-key="' + key + '"] .qf-panel');
+        if (!panel) return null;
+        var meta = FILTER_META[key];
+        if (meta.type === "multi") {
+          return Array.prototype.map.call(
+            panel.querySelectorAll('input[type="checkbox"]:checked'),
+            function (el) { return el.value; }
+          );
+        }
+        if (meta.type === "single") {
+          var radio = panel.querySelector('input[type="radio"]:checked');
+          return radio ? Number(radio.value) : 0;
+        }
+        if (meta.type === "range") {
+          return Number(panel.querySelector('input[type="range"]').value);
+        }
+        if (meta.type === "select") {
+          return panel.querySelector("select").value;
+        }
+        return null;
+      }
+
+      function syncPanelDraft(key) {
+        var panel = document.querySelector('.qf[data-key="' + key + '"] .qf-panel');
+        if (!panel) return;
+        var meta = FILTER_META[key];
+        var applied = appliedFilters[key];
+        if (meta.type === "multi") {
+          var set = {};
+          (applied || []).forEach(function (v) { set[v] = true; });
+          panel.querySelectorAll('input[type="checkbox"]').forEach(function (el) {
+            el.checked = !!set[el.value];
+          });
+        } else if (meta.type === "single") {
+          panel.querySelectorAll('input[type="radio"]').forEach(function (el) {
+            el.checked = Number(el.value) === Number(applied);
+          });
+        } else if (meta.type === "range") {
+          var range = panel.querySelector('input[type="range"]');
+          range.value = String(applied);
+          panel.querySelector(".qf-range-val").textContent = money(applied);
+        } else if (meta.type === "select") {
+          panel.querySelector("select").value = applied;
+        }
+      }
+
+      function applyOneFilter(key) {
+        var draft = readDraftFromPanel(key);
+        if (draft === null) return;
+        appliedFilters[key] = Array.isArray(draft) ? draft.slice() : draft;
+        runFilter(appliedFilters);
+        closeAllQuickFilters();
+      }
+
+      function resetOneFilter(key) {
+        var def = FILTER_DEFAULTS[key];
+        appliedFilters[key] = Array.isArray(def) ? def.slice() : def;
+        syncPanelDraft(key);
+        runFilter(appliedFilters);
+        closeAllQuickFilters();
+      }
+
+      function selectAllInPanel(key) {
+        var panel = document.querySelector('.qf[data-key="' + key + '"] .qf-panel');
+        if (!panel) return;
+        panel.querySelectorAll('input[type="checkbox"]').forEach(function (el) {
+          el.checked = true;
+        });
+      }
+
+      function buildQuickFilters() {
+        var html = "";
+        FILTER_ORDER.forEach(function (key) {
+          var meta = FILTER_META[key];
+          html += '<div class="qf" data-key="' + key + '">';
+          html += '<button type="button" class="qf-trigger" aria-expanded="false" aria-haspopup="true">';
+          html += '<span class="qf-name">' + meta.label + '</span>';
+          html += '<span class="qf-value">' + summarizeFilter(key) + '</span>';
+          html += '<span class="qf-chev" aria-hidden="true">▼</span>';
+          html += "</button>";
+          html += '<div class="qf-panel' + (meta.wide ? " wide" : "") + '" role="dialog" aria-label="' + meta.label + ' filter">';
+          html += '<div class="qf-panel-head"><strong>' + meta.label + "</strong>";
+          if (meta.type === "multi") {
+            html += '<button type="button" class="qf-link" data-select-all="' + key + '">Select all</button>';
+          }
+          html += "</div>";
+
+          if (meta.type === "multi" || meta.type === "single") {
+            html += '<div class="qf-list">';
+            meta.options.forEach(function (opt) {
+              var inputType = meta.type === "multi" ? "checkbox" : "radio";
+              var name = "qf-" + key;
+              html += '<label class="qf-item"><input type="' + inputType + '" name="' + name + '" value="' + opt.value + '" /> ' + opt.label + "</label>";
+            });
+            html += "</div>";
+          } else if (meta.type === "range") {
+            html += '<div class="qf-body"><div class="qf-range">';
+            html += '<div class="qf-range-val">' + money(FILTER_DEFAULTS.maxPrice) + "</div>";
+            html += '<input type="range" min="' + meta.min + '" max="' + meta.max + '" step="' + meta.step + '" value="' + FILTER_DEFAULTS.maxPrice + '" />';
+            html += "</div></div>";
+          } else if (meta.type === "select") {
+            html += '<div class="qf-body"><select>';
+            meta.options.forEach(function (opt) {
+              html += '<option value="' + opt.value + '">' + opt.label + "</option>";
+            });
+            html += "</select></div>";
+          }
+
+          html += '<div class="qf-actions">';
+          html += '<button type="button" class="btn btn-ghost" data-qf-reset="' + key + '">Reset</button>';
+          html += '<button type="button" class="btn btn-primary" data-qf-apply="' + key + '">Apply</button>';
+          html += "</div></div></div>";
+        });
+        html += '<button type="button" class="btn btn-ghost qf-clear-all" id="btn-reset-filters">Clear all</button>';
+        filterToolbar.innerHTML = html;
+
+        FILTER_ORDER.forEach(function (key) { syncPanelDraft(key); });
+
+        filterToolbar.querySelectorAll(".qf-trigger").forEach(function (btn) {
+          btn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            var wrap = btn.closest(".qf");
+            var key = wrap.getAttribute("data-key");
+            var willOpen = !wrap.classList.contains("open");
+            closeAllQuickFilters(willOpen ? key : null);
+            if (willOpen) {
+              syncPanelDraft(key);
+              wrap.classList.add("open");
+              btn.setAttribute("aria-expanded", "true");
+            } else {
+              wrap.classList.remove("open");
+              btn.setAttribute("aria-expanded", "false");
+            }
+          });
+        });
+
+        filterToolbar.querySelectorAll(".qf-panel").forEach(function (panel) {
+          panel.addEventListener("click", function (e) { e.stopPropagation(); });
+        });
+
+        filterToolbar.querySelectorAll("[data-qf-apply]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            applyOneFilter(btn.getAttribute("data-qf-apply"));
+          });
+        });
+        filterToolbar.querySelectorAll("[data-qf-reset]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            resetOneFilter(btn.getAttribute("data-qf-reset"));
+          });
+        });
+        filterToolbar.querySelectorAll("[data-select-all]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            selectAllInPanel(btn.getAttribute("data-select-all"));
+          });
+        });
+        filterToolbar.querySelectorAll('.qf[data-key="maxPrice"] input[type="range"]').forEach(function (range) {
+          range.addEventListener("input", function () {
+            range.closest(".qf-panel").querySelector(".qf-range-val").textContent = money(Number(range.value));
+          });
+        });
+
+        document.getElementById("btn-reset-filters").addEventListener("click", resetFilters);
+        updateFilterSummary();
+      }
+
+      function runFilter(f) {
+        updateCohortBanner();
+        updateFilterSummary();
+
+        var cards = Array.prototype.slice.call(list.querySelectorAll(".opp"));
+        var visible = [];
+
+        cards.forEach(function (card) {
+          var ok = true;
+          if (activeDigest && card.dataset.digest !== activeDigest) ok = false;
+          if (f.market.indexOf(card.dataset.market) < 0) ok = false;
+          if (f.source.indexOf(card.dataset.source) < 0) ok = false;
+          if (f.active.indexOf(card.dataset.active) < 0) ok = false;
+          if (f.score.indexOf(card.dataset.score) < 0) ok = false;
+          if (Number(card.dataset.beds) < f.beds) ok = false;
+          if (Number(card.dataset.baths) < f.baths) ok = false;
+          if (f.location.indexOf(card.dataset.location) < 0) ok = false;
+          if (Number(card.dataset.price) > f.maxPrice) ok = false;
+
+          var r = getRating(card.dataset.id);
+          var ratingKey = r === 0 ? "unrated" : String(r);
+          if (f.rating.indexOf(ratingKey) < 0) ok = false;
+
+          card.classList.toggle("hidden", !ok);
+          if (ok) visible.push(card);
+        });
+
+        visible.sort(function (a, b) {
+          var ca = Number(a.dataset.composite);
+          var cb = Number(b.dataset.composite);
+          var pa = Number(a.dataset.price);
+          var pb = Number(b.dataset.price);
+          var da = a.dataset.date;
+          var db = b.dataset.date;
+          var ra = getRating(a.dataset.id);
+          var rb = getRating(b.dataset.id);
+          if (f.sort === "composite-desc") return cb - ca;
+          if (f.sort === "composite-asc") return ca - cb;
+          if (f.sort === "price-asc") return pa - pb;
+          if (f.sort === "price-desc") return pb - pa;
+          if (f.sort === "date-desc") return da < db ? 1 : da > db ? -1 : 0;
+          if (f.sort === "date-asc") return da > db ? 1 : da < db ? -1 : 0;
+          if (f.sort === "rating-desc") return rb - ra || cb - ca;
+          return cb - ca;
+        });
+
+        visible.forEach(function (card, idx) {
+          list.appendChild(card);
+          var num = card.querySelector(".opp-num");
+          if (num) num.textContent = String(idx + 1);
+        });
+        document.getElementById("results-count").textContent =
+          "Showing " + visible.length + " propert" + (visible.length === 1 ? "y" : "ies") +
+          (activeDigest ? " in digest" : " (all matching filters)");
+        wireOpportunitySummaryToggles();
+      }
+
+      function applyFilters() {
+        runFilter(appliedFilters);
+      }
+
+      function refreshListFromApplied() {
+        runFilter(appliedFilters);
+      }
+
+      function resetFilters() {
+        activeDigest = null;
+        appliedFilters = cloneFilters(FILTER_DEFAULTS);
+        FILTER_ORDER.forEach(function (key) { syncPanelDraft(key); });
+        closeAllQuickFilters();
+        runFilter(appliedFilters);
+      }
+
+      function openOppsFromFeed(obj) {
+        appliedFilters = cloneFilters(FILTER_DEFAULTS);
+        FILTER_ORDER.forEach(function (key) { syncPanelDraft(key); });
+        activeDigest = obj.digest || null;
+        goNav("opportunities");
+        runFilter(appliedFilters);
+        closeAllQuickFilters();
+        var shelf = document.getElementById("filter-shelf");
+        shelf.classList.remove("open");
+        document.getElementById("btn-filter-shelf").setAttribute("aria-expanded", "false");
+      }
+
+      buildQuickFilters();
+      document.addEventListener("click", function () { closeAllQuickFilters(); });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") closeAllQuickFilters();
+      });
+
+      document.getElementById("btn-signin").addEventListener("click", showApp);
+      document.getElementById("pwd").addEventListener("keydown", function (e) {
+        if (e.key === "Enter") showApp();
+      });
+      if (btnNavToggle) {
+        btnNavToggle.addEventListener("click", function (e) {
+          e.stopPropagation();
+          toggleNav();
+        });
+      }
+      if (navScrim) navScrim.addEventListener("click", closeNav);
+
+      (function initAccountMenu() {
+        var menu = document.getElementById("account-menu");
+        var btn = document.getElementById("btn-account");
+        var panel = menu.querySelector(".account-panel");
+        var USERS = [
+          { name: "Geoff Rosen", initials: "Ge", role: "NW Arkansas" },
+          { name: "Jo Rosen", initials: "Jo", role: "NW Arkansas" },
+          { name: "Grant Rosen", initials: "GR", role: "Denver · family desk" },
+        ];
+        var userIndex = 0;
+
+        function renderUser() {
+          var u = USERS[userIndex];
+          document.getElementById("account-avatar").textContent = u.initials;
+          document.getElementById("account-name").textContent = u.name;
+          document.getElementById("account-role").textContent = u.role;
+        }
+
+        function closeAccountMenu() {
+          menu.classList.remove("open");
+          btn.setAttribute("aria-expanded", "false");
+        }
+
+        function openAccountMenu() {
+          menu.classList.add("open");
+          btn.setAttribute("aria-expanded", "true");
+        }
+
+        renderUser();
+
+        btn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          if (menu.classList.contains("open")) closeAccountMenu();
+          else openAccountMenu();
+        });
+        panel.addEventListener("click", function (e) { e.stopPropagation(); });
+        document.getElementById("btn-switch-user").addEventListener("click", function () {
+          userIndex = (userIndex + 1) % USERS.length;
+          renderUser();
+          closeAccountMenu();
+        });
+        document.getElementById("btn-signout").addEventListener("click", function () {
+          closeAccountMenu();
+          showLogin();
+        });
+        document.addEventListener("click", closeAccountMenu);
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") closeAccountMenu();
+        });
+      })();
+
+      // Mock wireframe: land in the app with left nav visible (skip login friction).
+      showApp();
+      window.matchMedia("(max-width: 900px)").addEventListener("change", function () {
+        setNavOpen(shell.classList.contains("sidebar-open"));
+      });
+
+      document.querySelectorAll(".nav-btn[data-nav]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          goNav(btn.getAttribute("data-nav"), {
+            all: btn.getAttribute("data-opps-all") === "1",
+          });
+        });
+      });
+      document.querySelectorAll(".recent-item[data-nav]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          goNav(btn.getAttribute("data-nav"), {
+            all: btn.getAttribute("data-opps-all") === "1",
+          });
+        });
+      });
+
+      document.getElementById("btn-platform-feedback").addEventListener("click", openPlatformModal);
+      document.getElementById("btn-platform-cancel").addEventListener("click", closePlatformModal);
+      document.getElementById("btn-platform-submit").addEventListener("click", submitPlatformFeedback);
+      platformModal.addEventListener("click", function (e) {
+        if (e.target === platformModal) closePlatformModal();
+      });
+
+      (function initTour() {
+        var tourModal = document.getElementById("tour-modal");
+        var tourViz = document.getElementById("tour-viz");
+        var tourKicker = document.getElementById("tour-kicker");
+        var tourTitle = document.getElementById("tour-title");
+        var tourCopy = document.getElementById("tour-copy");
+        var tourDots = document.getElementById("tour-dots");
+        var btnNext = document.getElementById("btn-tour-next");
+        var btnBack = document.getElementById("btn-tour-back");
+        var btnSkip = document.getElementById("btn-tour-skip");
+        var step = 0;
+
+        var STEPS = [
+          {
+            kicker: "Welcome",
+            title: "This is Prairie Peak",
+            copy:
+              "<p>Your family’s <strong>investment desk</strong> for two markets under one roof: <strong>Denver South</strong> (Grant / Haley) and <strong>NW Arkansas</strong> (Geoff &amp; Jo).</p>" +
+              "<p>Each day the platform scores new listings and surfaces what deserves a look — so you spend time deciding, not hunting.</p>",
+            viz:
+              '<div class="tour-map">' +
+              '<div class="tour-map-chip"><div class="city">Denver</div><div class="role">Front Range · livability + cash flow</div></div>' +
+              '<div class="tour-map-chip"><div class="city">NW Arkansas</div><div class="role">Ozarks · STR + auction buy box</div></div>' +
+              "</div>",
+          },
+          {
+            kicker: "How it fits",
+            title: "One loop: notice → shortlist → analyze → keep",
+            copy:
+              "<p>Prairie Peak isn’t a pile of tools. It’s a <strong>path</strong>.</p>" +
+              "<p>Digests tell you what changed. Opportunities hold the full inventory. Analyze stress-tests a deal. Artifacts keep the work you care about.</p>",
+            viz:
+              '<div class="tour-flow">' +
+              '<div class="tour-node active-node">Feed<span class="sub">What changed</span></div>' +
+              '<span class="tour-arrow">→</span>' +
+              '<div class="tour-node">Opportunities<span class="sub">Full list</span></div>' +
+              '<span class="tour-arrow">→</span>' +
+              '<div class="tour-node">Analyze<span class="sub">Deep dive</span></div>' +
+              '<span class="tour-arrow">→</span>' +
+              '<div class="tour-node">Artifacts<span class="sub">Your files</span></div>' +
+              "</div>",
+          },
+          {
+            kicker: "Activity feed",
+            title: "Start here every morning",
+            copy:
+              "<p>Daily digests read like an executive brief: title, status badge, one-line summary, then the story.</p>" +
+              "<p><strong>View opportunities</strong> opens that day’s listings only. <strong>Analyze top find</strong> jumps straight into the best deal from the digest.</p>",
+            viz:
+              '<div class="tour-stack">' +
+              '<div class="tour-mini-card"><div class="t">Denver South — daily digest</div><div class="m">7/31/2026 · <span class="tour-pill">Important</span></div><div class="m" style="margin-top:6px">4 new · 2 above threshold · Grade A</div><div class="a"><span class="tour-fake-btn">View opportunities</span><span class="tour-fake-link">Analyze top find</span></div></div>' +
+              "</div>",
+          },
+          {
+            kicker: "Opportunities",
+            title: "The full inventory — filter one dimension at a time",
+            copy:
+              "<p>Sidebar <strong>Opportunities</strong> shows everything scored — not just today’s digest.</p>" +
+              "<p>Open a filter pill, check what you want, then <strong>Apply</strong> that filter alone. Rate listings with stars + a note for the family.</p>",
+            viz:
+              '<div class="tour-filter-row">' +
+              '<span class="tour-filter-pill"><em>Market</em> All</span>' +
+              '<span class="tour-filter-pill"><em>Score</em> Strong</span>' +
+              '<span class="tour-filter-pill"><em>Source</em> Auction</span>' +
+              '<span class="tour-filter-pill"><em>Status</em> Active</span>' +
+              "</div>",
+          },
+          {
+            kicker: "Analyze",
+            title: "Deep dive — not a digest card",
+            copy:
+              "<p>Opportunities stay <strong>triage-level</strong> (what the daily digest shows). Analyze runs the full deal engine.</p>" +
+              "<p>Revenue scenarios, cash vs financed, sensitivity, scores, cost-seg, guest appeal, photos, key questions — then save or PDF.</p>",
+            viz:
+              '<div class="tour-stack">' +
+              '<div class="tour-mini-card"><div class="t">Full deal memo</div><div class="m">Revenue · Financials · Sensitivity · Scores · Tax · Guest · Photos · Questions</div><div class="a"><span class="tour-fake-btn">Save to My Artifacts</span><span class="tour-fake-link">Download PDF</span></div></div>' +
+              "</div>",
+          },
+          {
+            kicker: "Artifacts &amp; feedback",
+            title: "Keep the work. Steer the product.",
+            copy:
+              "<p><strong>My Artifacts</strong> stores named analyses in folders — your shortlist library.</p>" +
+              "<p>On listings: stars + comments for the family. Sidebar <strong>Give feedback</strong> is for bugs &amp; product ideas — not a specific address.</p>",
+            viz:
+              '<div class="tour-stack">' +
+              '<div class="tour-mini-card"><div class="t">Layton Rd — auction base case</div><div class="m">Folder · Shortlist · saved today</div><div class="tour-stars" style="margin-top:8px">★★★★☆</div></div>' +
+              "</div>",
+          },
+          {
+            kicker: "You’re set",
+            title: "Start with today’s feed",
+            copy:
+              "<p>Open a digest → <strong>View opportunities</strong> → rate what matters → <strong>Analyze top find</strong> when you want numbers.</p>" +
+              "<p>Revisit anytime from the sidebar: <strong>How to use</strong>. Product ideas go to <strong>Give feedback</strong> (same footer).</p>",
+            viz:
+              '<div class="tour-flow">' +
+              '<div class="tour-node active-node">Feed</div>' +
+              '<span class="tour-arrow">→</span>' +
+              '<div class="tour-node active-node">Decide</div>' +
+              '<span class="tour-arrow">→</span>' +
+              '<div class="tour-node active-node">Analyze</div>' +
+              "</div>",
+          },
+        ];
+
+        function renderDots() {
+          var html = "";
+          for (var i = 0; i < STEPS.length; i++) {
+            html += '<button type="button" class="tour-dot' + (i === step ? " active" : "") + '" data-tour-dot="' + i + '" aria-label="Step ' + (i + 1) + '"></button>';
+          }
+          tourDots.innerHTML = html;
+          tourDots.querySelectorAll("[data-tour-dot]").forEach(function (dot) {
+            dot.addEventListener("click", function () {
+              showStep(Number(dot.getAttribute("data-tour-dot")));
+            });
+          });
+        }
+
+        function showStep(i) {
+          step = Math.max(0, Math.min(STEPS.length - 1, i));
+          var s = STEPS[step];
+          tourKicker.innerHTML = s.kicker;
+          tourTitle.textContent = s.title;
+          tourCopy.innerHTML = s.copy;
+          tourViz.innerHTML = s.viz;
+          btnBack.hidden = step === 0;
+          btnNext.textContent = step === STEPS.length - 1 ? "Done" : "Continue";
+          renderDots();
+        }
+
+        function openTour() {
+          closeNav();
+          tourModal.classList.add("show");
+          showStep(0);
+        }
+
+        function closeTour() {
+          tourModal.classList.remove("show");
+        }
+
+        document.getElementById("btn-tour").addEventListener("click", openTour);
+        btnSkip.addEventListener("click", closeTour);
+        btnBack.addEventListener("click", function () { showStep(step - 1); });
+        btnNext.addEventListener("click", function () {
+          if (step >= STEPS.length - 1) closeTour();
+          else showStep(step + 1);
+        });
+        tourModal.addEventListener("click", function (e) {
+          if (e.target === tourModal) closeTour();
+        });
+
+        window.__closeTour = closeTour;
+        window.__openTour = openTour;
+      })();
+
+      (function initTheme() {
+        var THEME_KEY = "prairie-peak-theme";
+        var menu = document.getElementById("theme-menu");
+        var btn = document.getElementById("btn-theme");
+        var mql = window.matchMedia("(prefers-color-scheme: dark)");
+
+        function getPref() {
+          try { return localStorage.getItem(THEME_KEY) || "system"; }
+          catch (e) { return "system"; }
+        }
+
+        function resolveTheme(pref) {
+          if (pref === "light" || pref === "dark") return pref;
+          return mql.matches ? "dark" : "light";
+        }
+
+        function applyTheme(pref) {
+          var resolved = resolveTheme(pref);
+          document.documentElement.setAttribute("data-theme", resolved);
+          document.documentElement.setAttribute("data-theme-pref", pref);
+          try { localStorage.setItem(THEME_KEY, pref); } catch (e) {}
+          menu.querySelectorAll("[data-theme-opt]").forEach(function (opt) {
+            opt.setAttribute("aria-checked", opt.getAttribute("data-theme-opt") === pref ? "true" : "false");
+          });
+          btn.title = "Appearance · " + pref.charAt(0).toUpperCase() + pref.slice(1);
+        }
+
+        function closeThemeMenu() {
+          menu.classList.remove("open");
+          btn.setAttribute("aria-expanded", "false");
+        }
+
+        applyTheme(getPref());
+
+        btn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          var open = !menu.classList.contains("open");
+          menu.classList.toggle("open", open);
+          btn.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+        menu.querySelector(".theme-panel").addEventListener("click", function (e) {
+          e.stopPropagation();
+        });
+        menu.querySelectorAll("[data-theme-opt]").forEach(function (opt) {
+          opt.addEventListener("click", function () {
+            applyTheme(opt.getAttribute("data-theme-opt"));
+            closeThemeMenu();
+          });
+        });
+        document.addEventListener("click", closeThemeMenu);
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") closeThemeMenu();
+        });
+        if (mql.addEventListener) {
+          mql.addEventListener("change", function () {
+            if (getPref() === "system") applyTheme("system");
+          });
+        } else if (mql.addListener) {
+          mql.addListener(function () {
+            if (getPref() === "system") applyTheme("system");
+          });
+        }
+      })();
+
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          if (document.getElementById("tour-modal").classList.contains("show") && window.__closeTour) {
+            window.__closeTour();
+            return;
+          }
+          if (platformModal.classList.contains("show")) closePlatformModal();
+          if (saveArtifactModal.classList.contains("show")) closeSaveArtifactModal();
+        }
+      });
+
+      document.getElementById("btn-clear-cohort").addEventListener("click", resetFilters);
+      document.getElementById("btn-filter-shelf").addEventListener("click", function () {
+        var shelf = document.getElementById("filter-shelf");
+        var open = !shelf.classList.contains("open");
+        shelf.classList.toggle("open", open);
+        this.setAttribute("aria-expanded", open ? "true" : "false");
+        if (!open) closeAllQuickFilters();
+      });
+
+      document.querySelectorAll("[data-goto-opps]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          openOppsFromFeed(JSON.parse(btn.getAttribute("data-goto-opps")));
+        });
+      });
+
+      document.querySelectorAll("[data-feed-more]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var body = btn.parentElement.querySelector("[data-feed-body]");
+          if (!body) return;
+          var open = body.classList.contains("collapsed");
+          body.classList.toggle("collapsed", !open);
+          btn.textContent = open ? "See less" : "See more";
+        });
+      });
+
+      document.querySelectorAll("[data-analyze]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          openAnalyze(
+            btn.getAttribute("data-analyze"),
+            btn.getAttribute("data-needs-price") === "1"
+          );
+        });
+      });
+
+      /* Listing links are illustrative in the preview — don't 404 on fake URLs */
+      document.querySelectorAll("a.opp-addr").forEach(function (a) {
+        a.addEventListener("click", function (e) {
+          e.preventDefault();
+          var label = a.getAttribute("aria-label") || "";
+          var where = /Auction\.com/i.test(label) ? "Auction.com" : "Redfin";
+          showToast("copy-toast", "In the live app this opens " + where);
+        });
+      });
+
+      wireOpportunityCopyButtons();
+      wireOpportunitySummaryToggles();
+      window.addEventListener("resize", function () {
+        wireOpportunitySummaryToggles();
+      });
+      wireAddressAutocomplete();
+
+      document.getElementById("btn-run-analyze").addEventListener("click", function () {
+        var addr = addressInput.value.trim();
+        if (!addr) { addressInput.focus(); return; }
+        var price = Number(document.getElementById("ov-price").value || 0);
+        if (pendingNeedsPrice && !price) {
+          needsPrice.style.display = "block";
+          reportPanel.style.display = "none";
+          reportPanel.hidden = true;
+          overridesPanel.open = true;
+          return;
+        }
+        needsPrice.style.display = "none";
+        pendingNeedsPrice = false;
+        lastAnalyzeAddress = addr;
+        document.getElementById("report-addr").textContent = addr;
+        reportPanel.hidden = false;
+        reportPanel.style.display = "block";
+        lastAnalyzeHtml = captureReportHtml();
+      });
+
+      document.getElementById("btn-save-artifact").addEventListener("click", openSaveArtifactModal);
+      document.getElementById("btn-save-artifact-cancel").addEventListener("click", closeSaveArtifactModal);
+      document.getElementById("btn-save-artifact-confirm").addEventListener("click", confirmSaveArtifact);
+      document.getElementById("sa-folder").addEventListener("change", syncNewFolderField);
+      document.getElementById("btn-download-pdf-report").addEventListener("click", function () {
+        var html = captureReportHtml() || lastAnalyzeHtml;
+        downloadPdf(lastAnalyzeAddress || "Deal analysis", html);
+      });
+      document.getElementById("btn-download-pdf-artifact").addEventListener("click", function () {
+        var store = loadArtifacts();
+        var it = store.items.find(function (x) { return x.id === openArtifactId; });
+        if (!it) return;
+        downloadPdf(it.name, it.html || document.getElementById("artifact-detail-content").innerHTML);
+      });
+      document.getElementById("btn-new-folder").addEventListener("click", createFolderPrompt);
+      document.getElementById("btn-close-artifact").addEventListener("click", function () {
+        var panel = document.getElementById("artifact-detail");
+        panel.style.display = "none";
+        panel.hidden = true;
+        openArtifactId = null;
+      });
+      saveArtifactModal.addEventListener("click", function (e) {
+        if (e.target === saveArtifactModal) closeSaveArtifactModal();
+      });
+    })();
+  </script>
+</body>
+</html>
