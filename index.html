@@ -1088,9 +1088,14 @@
       flex-shrink: 0;
     }
     .opp-score[data-bucket="strong"] {
-      background: #e6f5ec;
+      background: color-mix(in srgb, #1f6b45 14%, var(--panel));
       color: #1f6b45;
       border-color: rgba(31, 107, 69, 0.22);
+    }
+    html[data-theme="dark"] .opp-score[data-bucket="strong"] {
+      background: color-mix(in srgb, #3d9f78 22%, var(--panel));
+      color: #8fd4b0;
+      border-color: rgba(61, 159, 120, 0.35);
     }
     .opp-score[data-bucket="interesting"] {
       background: var(--accent-soft);
@@ -2463,7 +2468,7 @@
 
             <p class="feed-section-label">All activity</p>
 
-            <div class="feed-day"><span>Friday, Jul 31 · Today</span></div>
+            <div class="feed-day"><span>Friday, Jul 31</span></div>
 
             <article class="feed-card" id="feed-shared-sample">
               <div class="feed-card-title-row">
@@ -2496,10 +2501,10 @@
                 <span class="feed-date">7/31/2026</span>
                 <span class="pill pill-important">Important</span>
               </div>
-              <p class="feed-summary">4 new · 2 above threshold · Market health Grade A · Haley on Denver emails</p>
+              <p class="feed-summary">2 new · 2 above threshold · Market health Grade A · Haley on Denver emails</p>
               <hr class="feed-divider" />
               <p class="feed-body collapsed" data-feed-body>
-                Four new listings scored; two cleared the bar. Top of the stack is 7314 S Downing Cir W — 5/4, livability 87 — a real space upgrade vs the family’s current Denver home if the cash-flow hit is acceptable. Second look: 3532 E Davies Pl at $1.0M. Both are livability plays at 7%.
+                Two new listings scored; both cleared the Denver bar. Top of the stack is 7314 S Downing Cir W — 5/4, livability 87 — a strong livability play for the Denver desk if the cash-flow hit at 7% is acceptable. Second look: 3532 E Davies Pl at $1.0M.
               </p>
               <button type="button" class="feed-more" data-feed-more>See more</button>
               <div class="feed-actions">
@@ -2545,10 +2550,10 @@
                 <span class="feed-date">7/30/2026</span>
                 <span class="pill pill-ok">1 interesting</span>
               </div>
-              <p class="feed-summary">1 qualifier · 6167 S Elati Ct · livability 80 · baths &amp; space clear upgrade bar</p>
+              <p class="feed-summary">1 qualifier · 6167 S Elati Ct · livability 80 · baths &amp; space clear the Denver bar</p>
               <hr class="feed-divider" />
               <p class="feed-body collapsed" data-feed-body>
-                One qualifier: 6167 S Elati Ct, Littleton — 4/3, livability 80 at $1.1M. Expensive vs rent; kept because space and baths clear the family upgrade bar.
+                One qualifier: 6167 S Elati Ct, Littleton — 4/3, livability 80 at $1.1M. Expensive vs rent; kept because baths and space clear the Denver desk bar.
               </p>
               <button type="button" class="feed-more" data-feed-more>See more</button>
               <div class="feed-actions">
@@ -2571,7 +2576,7 @@
               <p class="feed-summary">J Street Strong · Olive St Interesting · guest filter applied</p>
               <hr class="feed-divider" />
               <p class="feed-body collapsed" data-feed-body>
-                Two MLS listings cleared composite 75 after the guest filter — J Street (Strong, 81+) and Olive St (Interesting, mid-70s).
+                Two MLS listings cleared the notify bar (composite ≥75) after the guest filter — J Street (Strong ≥80, score 81) and Olive St (Interesting, mid-70s).
               </p>
               <button type="button" class="feed-more" data-feed-more>See more</button>
               <div class="feed-actions">
@@ -2611,7 +2616,7 @@
             </div>
 
             <div class="tag-legend" title="How to read a row">
-              <span><strong>Score</strong> — Strong ≥80 · Interesting 55–79 · Pass &lt;55 · <em>—</em> queued (shared)</span>
+              <span><strong>Score</strong> — Strong ≥80 · Interesting 55–79 · Pass &lt;55 · <em>—</em> queued (shared). Digests may use a separate notify bar (e.g. Arkansas ≥75).</span>
               <span><strong>Address</strong> — listing page in the live product (preview shows a note)</span>
               <span><strong>Meta</strong> — beds · source · market · flags</span>
               <span><strong>More</strong> — expands the one-line blurb</span>
@@ -2684,7 +2689,7 @@
                     </div>
                     <p class="opp-meta">5 bd / 4 ba · 3,200 sqft · Redfin · Denver · Jul 31</p>
                     <div class="opp-exec-wrap">
-                      <p class="opp-exec">Five-bed Centennial upgrade with livability in the high 80s — clears baths and distance vs the family’s current Denver home. Cash flow is ugly at 7%; this is a “will we live here?” call.</p>
+                      <p class="opp-exec">Five-bed Centennial with livability in the high 80s — clears baths and the Denver desk distance bar. Cash flow is ugly at 7%; treat as a livability call, not a cash-flow deal.</p>
                       <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
                     </div>
                   </div>
@@ -3514,7 +3519,7 @@
 
       /* Inventory + a few off-list addresses so Analyze search feels like real lookup */
       var LOOKUP_ADDRESSES = [
-        { address: "701 E Bates Ave, Englewood CO", hint: "Address lookup · Denver metro", source: "lookup" },
+        { address: "8500 E Belleview Ave, Greenwood Village CO", hint: "Address lookup · Denver metro", source: "lookup" },
         { address: "2203 SE 14th St, Bentonville AR", hint: "Address lookup · NWA", source: "lookup" },
         { address: "Chestnut Dr, Beaver Lake AR", hint: "Address lookup · lakefront (partial)", source: "lookup" },
         { address: "512 W Walnut St, Rogers AR", hint: "Address lookup · NWA", source: "lookup" },
@@ -3950,6 +3955,8 @@
           FILTER_DEFAULTS.location.push(loc);
           FILTER_META.location.options.push({ value: loc, label: loc });
           if (appliedFilters.location.indexOf(loc) < 0) appliedFilters.location.push(loc);
+          // Rebuild pills so Select all / Apply includes the new city.
+          buildQuickFilters();
         }
       }
 
@@ -4063,7 +4070,11 @@
         closeAddrSuggest();
         addressInput.value = addr;
         showToast("share-toast", "Queued for tonight’s refresh — now on Opportunities");
-        updateAddrStatus();
+        activeSharedOnly = true;
+        activeDigest = null;
+        goNav("opportunities");
+        runFilter(appliedFilters);
+        card.scrollIntoView({ block: "nearest", behavior: "smooth" });
         return true;
       }
 
@@ -4749,9 +4760,8 @@
         var pwd = document.getElementById("pwd");
         if (pwd) { pwd.value = ""; pwd.focus(); }
         if (loginError) loginError.classList.remove("show");
-        if (location.hash && location.hash !== "#login") {
-          history.replaceState({ nav: "login" }, "", "#login");
-        }
+        // Always pin hash to #login so Back doesn’t resurrect a desk route under the gate.
+        history.replaceState({ nav: "login" }, "", "#login");
       }
 
       function trySignIn() {
@@ -5410,7 +5420,13 @@
         if (e.key === "Enter") trySignIn();
       });
       window.addEventListener("popstate", function () {
-        if (app.style.display === "none") return;
+        if (app.style.display === "none") {
+          // Keep login gate; ignore desk hashes while signed out.
+          if (location.hash !== "#login") {
+            history.replaceState({ nav: "login" }, "", "#login");
+          }
+          return;
+        }
         goNav(navFromHash(), { fromHistory: true });
       });
       if (btnNavToggle) {
@@ -5553,7 +5569,7 @@
               "<p><strong>View opportunities</strong> opens that day’s listings only. <strong>Analyze top find</strong> jumps straight into the best deal from the digest.</p>",
             viz:
               '<div class="tour-stack">' +
-              '<div class="tour-mini-card"><div class="t">Denver South — daily digest</div><div class="m">7/31/2026 · <span class="tour-pill">Important</span></div><div class="m" style="margin-top:6px">4 new · 2 above threshold · Grade A</div><div class="a"><span class="tour-fake-btn">View opportunities</span><span class="tour-fake-link">Analyze top find</span></div></div>' +
+              '<div class="tour-mini-card"><div class="t">Denver South — daily digest</div><div class="m">7/31/2026 · <span class="tour-pill">Important</span></div><div class="m" style="margin-top:6px">2 new · 2 above threshold · Grade A</div><div class="a"><span class="tour-fake-btn">View opportunities</span><span class="tour-fake-link">Analyze top find</span></div></div>' +
               "</div>",
           },
           {
