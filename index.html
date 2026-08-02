@@ -1895,7 +1895,9 @@
       flex-wrap: wrap;
       gap: 8px;
     }
-    .addr-status .try-link {
+    .addr-status .try-link,
+    .info-banner .try-link,
+    .analyze-actions .try-link {
       background: none;
       border: 0;
       padding: 0;
@@ -1905,6 +1907,9 @@
       cursor: pointer;
       text-decoration: underline;
       text-underline-offset: 2px;
+    }
+    .info-banner .try-link {
+      font-size: inherit;
     }
     .analyze-actions {
       display: flex;
@@ -2945,20 +2950,7 @@
 
           <!-- ANALYZE -->
           <section id="page-analyze" class="page wide">
-            <p class="info-banner">Deep dive — same depth as a full deal memo you would save. Digests &amp; Opportunities stay triage-level; this report is the full write-up.</p>
-
-            <div class="analyze-paths" aria-label="How Analyze works">
-              <div class="analyze-path">
-                <strong>1 · Already on Opportunities</strong>
-                Start typing — pick from <em>Your inventory</em>, then run the memo.
-                <span class="path-step">Scored listings from digests &amp; scrapes</span>
-              </div>
-              <div class="analyze-path is-share">
-                <strong>2 · New address we don’t track</strong>
-                Paste any street address → <strong>Add to Opportunities</strong> (queues tonight’s refresh). You can still run a memo now.
-                <span class="path-step">No texting Grant — share it on the desk here</span>
-              </div>
-            </div>
+            <p class="info-banner">Full deal memo for one address. New to the desk? <button type="button" class="try-link" id="btn-analyze-howto">How to use</button> covers inventory vs share.</p>
 
             <div class="field">
               <label for="analyze-address">Address</label>
@@ -2969,13 +2961,7 @@
                   aria-describedby="addr-status" />
                 <div id="addr-suggest" class="addr-suggest" role="listbox" hidden></div>
               </div>
-              <div id="addr-status" class="addr-status" data-state="empty" role="status">
-                <span class="status-title">Waiting for an address</span>
-                Try an inventory pick from the dropdown, or paste one we don’t have yet.
-                <span class="status-actions">
-                  <button type="button" class="try-link" id="btn-try-unknown" data-try-addr="1200 SE 8th St, Bentonville AR">Try a new address (demo)</button>
-                </span>
-              </div>
+              <div id="addr-status" class="addr-status" data-state="empty" role="status" hidden></div>
             </div>
             <details class="overrides" id="overrides-panel">
               <summary>Fill in missing listing data</summary>
@@ -3008,7 +2994,8 @@
             <div class="analyze-actions">
               <button type="button" class="btn btn-primary" id="btn-add-opp" disabled title="Queues this address for tonight’s refresh">Add to Opportunities</button>
               <button type="button" class="btn btn-ghost" id="btn-run-analyze">Run analysis</button>
-              <p class="action-hint" id="analyze-action-hint">Add puts it on the desk · Run opens the sample memo now</p>
+              <button type="button" class="try-link" id="btn-try-unknown" data-try-addr="1200 SE 8th St, Bentonville AR">Try a new address (demo)</button>
+              <p class="action-hint" id="analyze-action-hint">Add queues for tonight · Run opens the memo now</p>
             </div>
             <div id="needs-price" class="info-banner warn" style="display:none;margin-top:16px">Enter an ask or bid price above, then run again. Auctions often need this because there is no MLS ask.</div>
 
@@ -3638,67 +3625,46 @@
         addBtn.disabled = info.state !== "watch";
 
         if (info.state === "empty") {
-          el.innerHTML =
-            '<span class="status-title">Waiting for an address</span>' +
-            "Pick from inventory suggestions, or paste one we don’t track yet." +
-            '<span class="status-actions">' +
-            '<button type="button" class="try-link" data-try-addr="1200 SE 8th St, Bentonville AR">Try a new address (demo)</button>' +
-            "</span>";
+          el.hidden = true;
+          el.innerHTML = "";
           setAnalyzeButtonRoles("run");
-          if (hint) hint.textContent = "Paste a new address to enable Add to Opportunities";
+          if (hint) hint.textContent = "Add queues for tonight · Run opens the memo now";
         } else if (info.state === "partial") {
+          el.hidden = false;
           el.innerHTML =
-            '<span class="status-title">Keep typing a full street address</span>' +
-            "Include street number, street name, and city — e.g. <em>1200 SE 8th St, Bentonville AR</em>.";
+            '<span class="status-title">Keep typing</span>' +
+            "Include street number, street, and city.";
           setAnalyzeButtonRoles("run");
-          if (hint) hint.textContent = "Need a fuller address before we can queue it";
+          if (hint) hint.textContent = "Need a fuller address to queue it";
         } else if (info.state === "inventory") {
+          el.hidden = false;
           el.innerHTML =
-            '<span class="status-title">On Opportunities — ready to analyze</span>' +
-            escapeHtml(addr) + " is already in inventory. Run the deal memo below.";
+            '<span class="status-title">On Opportunities</span>' +
+            "Ready to run the deal memo.";
           setAnalyzeButtonRoles("run");
-          if (hint) hint.textContent = "Already on the desk — Run analysis opens the memo";
+          if (hint) hint.textContent = "Already on the desk — Run analysis";
         } else if (info.state === "pending") {
+          el.hidden = false;
           el.innerHTML =
-            '<span class="status-title">Queued — waiting on tonight’s refresh</span>' +
-            escapeHtml(addr) + " is on Opportunities as a shared pending row. You can still run a memo now." +
+            '<span class="status-title">Queued for tonight’s refresh</span>' +
+            "You can still run a memo now." +
             '<span class="status-actions">' +
             '<button type="button" class="try-link" data-view-shared="1">View on Opportunities</button>' +
             "</span>";
           setAnalyzeButtonRoles("run");
-          if (hint) hint.textContent = "Already queued · Run analysis still works now";
+          if (hint) hint.textContent = "Already queued · Run analysis still works";
         } else {
+          el.hidden = false;
           el.innerHTML =
             '<span class="status-title">Not in inventory yet</span>' +
-            "<strong>Add to Opportunities</strong> puts this on the desk for tonight’s refresh (scored row tomorrow). " +
-            "<strong>Run analysis</strong> opens a memo right now without waiting." +
-            '<span class="status-actions">' +
-            '<button type="button" class="btn btn-primary" data-status-add="1">Add to Opportunities</button>' +
-            '<button type="button" class="btn btn-ghost" data-status-run="1">Run analysis now</button>' +
-            "</span>";
+            "Add to Opportunities queues tonight’s refresh. Run analysis opens a memo now.";
           setAnalyzeButtonRoles("share");
-          if (hint) hint.textContent = "Primary: add to the desk · or run a memo immediately";
+          if (hint) hint.textContent = "Primary: add to the desk · or run immediately";
         }
 
-        el.querySelectorAll("[data-try-addr]").forEach(function (btn) {
-          btn.addEventListener("click", function () {
-            pickAddress(btn.getAttribute("data-try-addr"), false);
-            openAddrSuggestFromInput();
-          });
-        });
         el.querySelectorAll("[data-view-shared]").forEach(function (btn) {
           btn.addEventListener("click", function () {
             openOppsFromFeed({ shared: "1" });
-          });
-        });
-        el.querySelectorAll("[data-status-add]").forEach(function (btn) {
-          btn.addEventListener("click", function () {
-            addAddressToOpportunities(addressInput.value.trim());
-          });
-        });
-        el.querySelectorAll("[data-status-run]").forEach(function (btn) {
-          btn.addEventListener("click", function () {
-            document.getElementById("btn-run-analyze").click();
           });
         });
       }
@@ -5604,23 +5570,14 @@
           },
           {
             kicker: "Analyze",
-            title: "Deep dive — not a digest card",
+            title: "Deep dive — inventory or a new address",
             copy:
-              "<p>Opportunities stay <strong>triage-level</strong> (what the daily digest shows). Analyze runs the full deal engine.</p>" +
-              "<p>Revenue scenarios, cash vs financed, sensitivity, scores, cost-seg, guest appeal, photos, key questions — then save or PDF.</p>",
+              "<p>Opportunities stay <strong>triage-level</strong>. Analyze runs the full deal memo (revenue, financing, sensitivity, scores, tax, guest, photos).</p>" +
+              "<p><strong>Already on the desk:</strong> start typing and pick from inventory, then <strong>Run analysis</strong>.</p>" +
+              "<p><strong>New address we don’t track:</strong> paste it → <strong>Add to Opportunities</strong> queues tonight’s refresh (pending row + Activity feed). You can still run a memo now.</p>",
             viz:
               '<div class="tour-stack">' +
-              '<div class="tour-mini-card"><div class="t">Full deal memo</div><div class="m">Revenue · Financials · Sensitivity · Scores · Tax · Guest · Photos · Questions</div><div class="a"><span class="tour-fake-btn">Save to My Artifacts</span><span class="tour-fake-link">Download PDF</span></div></div>' +
-              "</div>",
-          },
-          {
-            kicker: "Share an address",
-            title: "Have a property we don’t track yet?",
-            copy:
-              "<p>Paste it on <strong>Analyze</strong>. If it isn’t in inventory, choose <strong>Add to Opportunities</strong> — it queues for tonight’s refresh, shows as a pending row, and shows up in the Activity feed.</p>" +
-              "<p>You can still <strong>Run analysis now</strong> for a quick memo. No separate tab — same desk loop.</p>",
-            viz:
-              '<div class="tour-stack">' +
+              '<div class="tour-mini-card"><div class="t">On Opportunities</div><div class="m">Pick from inventory → Run analysis</div><div class="a"><span class="tour-fake-btn">Run analysis</span></div></div>' +
               '<div class="tour-mini-card"><div class="t">Not in inventory yet</div><div class="m">1847 SW A Street, Bentonville AR</div><div class="a"><span class="tour-fake-btn">Add to Opportunities</span><span class="tour-fake-link">Run analysis now</span></div></div>' +
               "</div>",
           },
@@ -5688,10 +5645,20 @@
           renderDots();
         }
 
-        function openTour() {
+        function openTour(startStep) {
           closeNav();
           tourModal.classList.add("show");
-          showStep(0);
+          var idx = 0;
+          if (typeof startStep === "number") idx = startStep;
+          else if (typeof startStep === "string") {
+            for (var i = 0; i < STEPS.length; i++) {
+              if (STEPS[i].kicker.toLowerCase().indexOf(startStep.toLowerCase()) === 0) {
+                idx = i;
+                break;
+              }
+            }
+          }
+          showStep(idx);
         }
 
         function closeTour() {
@@ -5863,6 +5830,12 @@
         btnTryUnknown.addEventListener("click", function () {
           pickAddress(btnTryUnknown.getAttribute("data-try-addr") || "1200 SE 8th St, Bentonville AR", false);
           openAddrSuggestFromInput();
+        });
+      }
+      var btnAnalyzeHowto = document.getElementById("btn-analyze-howto");
+      if (btnAnalyzeHowto) {
+        btnAnalyzeHowto.addEventListener("click", function () {
+          if (window.__openTour) window.__openTour("Analyze");
         });
       }
 
