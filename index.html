@@ -911,6 +911,46 @@
       font-weight: 600;
       color: var(--ink);
     }
+    .qf-minmax {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 4px 0 2px;
+    }
+    .qf-minmax .field {
+      margin: 0;
+    }
+    .qf-minmax label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .qf-minmax input[type="number"] {
+      width: 100%;
+      box-sizing: border-box;
+      background: var(--input-bg);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: var(--ink);
+      font-family: inherit;
+      font-size: 13px;
+    }
+    .qf-minmax input[type="number"]:focus {
+      outline: 2px solid color-mix(in srgb, var(--accent) 35%, transparent);
+      border-color: var(--accent);
+    }
+    .login-error {
+      display: none;
+      margin: 0 0 12px;
+      font-size: 13px;
+      color: #a33;
+    }
+    .login-error.show { display: block; }
     .qf-actions {
       display: flex;
       justify-content: flex-end;
@@ -2292,8 +2332,9 @@
       <p class="sub" style="margin-top:-12px">Activity feed → Opportunities → Analyze → My Artifacts</p>
       <div class="field">
         <label for="pwd">Password</label>
-        <input id="pwd" type="password" placeholder="Any password works in this preview" />
+        <input id="pwd" type="password" placeholder="Any password works in this preview" autocomplete="current-password" />
       </div>
+      <p class="login-error" id="login-error" role="alert">Enter a password to continue (any value works in this preview).</p>
       <button class="btn btn-primary" type="button" id="btn-signin">Sign in</button>
     </div>
   </div>
@@ -2558,7 +2599,7 @@
                 <div class="filter-toolbar" id="filter-toolbar">
                   <!-- quick filters rendered by JS -->
                 </div>
-                <p class="filter-hint">Open a filter · adjust checkboxes · Apply that filter only. Clear all restores full inventory.</p>
+                <p class="filter-hint">Open a filter · set min/max for price, beds, baths, or sqft · Apply that filter only. Clear all restores full inventory.</p>
               </div>
             </div>
 
@@ -2575,7 +2616,7 @@
             </div>
 
             <div id="opp-list">
-              <article class="opp is-pending" data-id="shared-astreet" data-digest="" data-market="arkansas" data-source="shared" data-active="active" data-score="pending" data-beds="0" data-baths="0" data-price="0" data-location="Bentonville" data-composite="-1" data-date="2026-07-31" data-shared="1">
+              <article class="opp is-pending" data-id="shared-astreet" data-digest="" data-market="arkansas" data-source="shared" data-active="active" data-score="pending" data-beds="0" data-baths="0" data-price="0" data-sqft="0" data-location="Bentonville" data-composite="-1" data-date="2026-07-31" data-shared="1">
                 <div class="opp-row">
                   <span class="opp-num" aria-hidden="true">1</span>
                   <div class="opp-score" data-bucket="pending" title="Queued · waiting on tonight’s refresh">—</div>
@@ -2600,7 +2641,7 @@
                 <div class="opp-note" data-note-for="shared-astreet"></div>
               </article>
 
-              <article class="opp is-pending" data-id="shared-elm" data-digest="" data-market="arkansas" data-source="shared" data-active="active" data-score="pending" data-beds="0" data-baths="0" data-price="0" data-location="Rogers" data-composite="-1" data-date="2026-07-31" data-shared="1">
+              <article class="opp is-pending" data-id="shared-elm" data-digest="" data-market="arkansas" data-source="shared" data-active="active" data-score="pending" data-beds="0" data-baths="0" data-price="0" data-sqft="0" data-location="Rogers" data-composite="-1" data-date="2026-07-31" data-shared="1">
                 <div class="opp-row">
                   <span class="opp-num" aria-hidden="true">2</span>
                   <div class="opp-score" data-bucket="pending" title="Queued · waiting on tonight’s refresh">—</div>
@@ -2625,7 +2666,7 @@
                 <div class="opp-note" data-note-for="shared-elm"></div>
               </article>
 
-              <article class="opp" data-id="downing" data-digest="denver-2026-07-31" data-market="denver" data-source="mls" data-active="active" data-score="interesting" data-beds="5" data-baths="4" data-price="850000" data-location="Centennial" data-composite="65" data-date="2026-07-31">
+              <article class="opp" data-id="downing" data-digest="denver-2026-07-31" data-market="denver" data-source="mls" data-active="active" data-score="interesting" data-beds="5" data-baths="4" data-price="850000" data-sqft="3200" data-location="Centennial" data-composite="65" data-date="2026-07-31">
                 <div class="opp-row">
                   <span class="opp-num" aria-hidden="true">1</span>
                   <div class="opp-score" data-bucket="interesting" title="Interesting · composite 65">65</div>
@@ -2634,7 +2675,7 @@
                       <div class="opp-addr-row"><a class="opp-addr" href="https://www.redfin.com/CO/Centennial/7314-S-Downing-Cir-W" target="_blank" rel="noopener noreferrer" aria-label="Open 7314 S Downing Cir W, Centennial on Redfin">7314 S Downing Cir W, Centennial<svg class="opp-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg></a></div>
                       <span class="opp-price">$850K</span>
                     </div>
-                    <p class="opp-meta">5 bd / 4 ba · Redfin · Denver · Jul 31</p>
+                    <p class="opp-meta">5 bd / 4 ba · 3,200 sqft · Redfin · Denver · Jul 31</p>
                     <div class="opp-exec-wrap">
                       <p class="opp-exec">Five-bed Centennial upgrade with livability in the high 80s — clears baths and distance vs the family’s current Denver home. Cash flow is ugly at 7%; this is a “will we live here?” call.</p>
                       <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
@@ -2650,7 +2691,7 @@
                 <div class="opp-note" data-note-for="downing"></div>
               </article>
 
-              <article class="opp" data-id="davies" data-digest="denver-2026-07-31" data-market="denver" data-source="mls" data-active="active" data-score="interesting" data-beds="5" data-baths="3" data-price="1000000" data-location="Centennial" data-composite="59" data-date="2026-07-31">
+              <article class="opp" data-id="davies" data-digest="denver-2026-07-31" data-market="denver" data-source="mls" data-active="active" data-score="interesting" data-beds="5" data-baths="3" data-price="1000000" data-sqft="2900" data-location="Centennial" data-composite="59" data-date="2026-07-31">
                 <div class="opp-row">
                   <span class="opp-num" aria-hidden="true">2</span>
                   <div class="opp-score" data-bucket="interesting" title="Interesting · composite 59">59</div>
@@ -2659,7 +2700,7 @@
                       <div class="opp-addr-row"><a class="opp-addr" href="https://www.redfin.com/CO/Centennial/3532-E-Davies-Pl" target="_blank" rel="noopener noreferrer" aria-label="Open 3532 E Davies Pl, Centennial on Redfin">3532 E Davies Pl, Centennial<svg class="opp-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg></a></div>
                       <span class="opp-price">$1M</span>
                     </div>
-                    <p class="opp-meta">5 bd / 3 ba · Redfin · Denver · Jul 31</p>
+                    <p class="opp-meta">5 bd / 3 ba · 2,900 sqft · Redfin · Denver · Jul 31</p>
                     <div class="opp-exec-wrap">
                       <p class="opp-exec">Million-dollar Centennial five-bed; livability strong, investment weak. Keep only if the floor plan is enough of an upgrade to justify the payment.</p>
                       <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
@@ -2675,7 +2716,7 @@
                 <div class="opp-note" data-note-for="davies"></div>
               </article>
 
-              <article class="opp" data-id="elati" data-digest="denver-2026-07-30" data-market="denver" data-source="mls" data-active="active" data-score="interesting" data-beds="4" data-baths="3" data-price="1099000" data-location="Littleton" data-composite="55" data-date="2026-07-30">
+              <article class="opp" data-id="elati" data-digest="denver-2026-07-30" data-market="denver" data-source="mls" data-active="active" data-score="interesting" data-beds="4" data-baths="3" data-price="1099000" data-sqft="2600" data-location="Littleton" data-composite="55" data-date="2026-07-30">
                 <div class="opp-row">
                   <span class="opp-num" aria-hidden="true">3</span>
                   <div class="opp-score" data-bucket="interesting" title="Interesting · composite 55">55</div>
@@ -2684,7 +2725,7 @@
                       <div class="opp-addr-row"><a class="opp-addr" href="https://www.redfin.com/CO/Littleton/6167-S-Elati-Ct" target="_blank" rel="noopener noreferrer" aria-label="Open 6167 S Elati Ct, Littleton on Redfin">6167 S Elati Ct, Littleton<svg class="opp-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg></a></div>
                       <span class="opp-price">$1.1M</span>
                     </div>
-                    <p class="opp-meta">4 bd / 3 ba · Redfin · Denver · Jul 30</p>
+                    <p class="opp-meta">4 bd / 3 ba · 2,600 sqft · Redfin · Denver · Jul 30</p>
                     <div class="opp-exec-wrap">
                       <p class="opp-exec">Yesterday’s Denver qualifier — space and baths clear; price stretches the box.</p>
                       <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
@@ -2700,7 +2741,7 @@
                 <div class="opp-note" data-note-for="elati"></div>
               </article>
 
-              <article class="opp" data-id="cherry" data-digest="denver-2026-07-29" data-market="denver" data-source="mls" data-active="inactive" data-score="interesting" data-beds="5" data-baths="4" data-price="685000" data-location="Centennial" data-composite="56" data-date="2026-07-29">
+              <article class="opp" data-id="cherry" data-digest="denver-2026-07-29" data-market="denver" data-source="mls" data-active="inactive" data-score="interesting" data-beds="5" data-baths="4" data-price="685000" data-sqft="2800" data-location="Centennial" data-composite="56" data-date="2026-07-29">
                 <div class="opp-row">
                   <span class="opp-num" aria-hidden="true">4</span>
                   <div class="opp-score" data-bucket="interesting" title="Interesting · composite 56">56</div>
@@ -2709,7 +2750,7 @@
                       <div class="opp-addr-row"><p class="opp-addr is-inactive">6218 S Cherry Cir, Centennial</p></div>
                       <span class="opp-price">$685K</span>
                     </div>
-                    <p class="opp-meta">5 bd / 4 ba · Redfin · Denver · Inactive · Jul 29</p>
+                    <p class="opp-meta">5 bd / 4 ba · 2,800 sqft · Redfin · Denver · Inactive · Jul 29</p>
                     <div class="opp-exec-wrap">
                       <p class="opp-exec">Was a strong relative value at $685K; kept for history / comps.</p>
                       <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
@@ -2725,7 +2766,7 @@
                 <div class="opp-note" data-note-for="cherry"></div>
               </article>
 
-              <article class="opp" data-id="jstreet" data-digest="arkansas-2026-07-30" data-market="arkansas" data-source="mls" data-active="active" data-score="strong" data-beds="4" data-baths="3" data-price="485000" data-location="Bentonville" data-composite="81" data-date="2026-07-30">
+              <article class="opp" data-id="jstreet" data-digest="arkansas-2026-07-30" data-market="arkansas" data-source="mls" data-active="active" data-score="strong" data-beds="4" data-baths="3" data-price="485000" data-sqft="2180" data-location="Bentonville" data-composite="81" data-date="2026-07-30">
                 <div class="opp-row">
                   <span class="opp-num" aria-hidden="true">5</span>
                   <div class="opp-score" data-bucket="strong" title="Strong · composite 81">81</div>
@@ -2734,7 +2775,7 @@
                       <div class="opp-addr-row"><a class="opp-addr" href="https://www.redfin.com/AR/Bentonville/1842-SE-J-St" target="_blank" rel="noopener noreferrer" aria-label="Open 1842 SE J Street, Bentonville on Redfin">1842 SE J Street, Bentonville<svg class="opp-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg></a></div>
                       <span class="opp-price">$485K</span>
                     </div>
-                    <p class="opp-meta">4 bd / 3 ba · Redfin · Arkansas · Jul 30</p>
+                    <p class="opp-meta">4 bd / 3 ba · 2,180 sqft · Redfin · Arkansas · Jul 30</p>
                     <div class="opp-exec-wrap">
                       <p class="opp-exec">Trail-adjacent Bentonville four-bed — guest appeal carries a Strong bucket. Cash-buy STR shortlist if interior is guest-ready.</p>
                       <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
@@ -2750,7 +2791,7 @@
                 <div class="opp-note" data-note-for="jstreet"></div>
               </article>
 
-              <article class="opp" data-id="olive" data-digest="arkansas-2026-07-30" data-market="arkansas" data-source="mls" data-active="active" data-score="interesting" data-beds="3" data-baths="2" data-price="392000" data-location="Rogers" data-composite="76" data-date="2026-07-30">
+              <article class="opp" data-id="olive" data-digest="arkansas-2026-07-30" data-market="arkansas" data-source="mls" data-active="active" data-score="interesting" data-beds="3" data-baths="2" data-price="392000" data-sqft="1650" data-location="Rogers" data-composite="76" data-date="2026-07-30">
                 <div class="opp-row">
                   <span class="opp-num" aria-hidden="true">6</span>
                   <div class="opp-score" data-bucket="interesting" title="Interesting · composite 76">76</div>
@@ -2759,7 +2800,7 @@
                       <div class="opp-addr-row"><a class="opp-addr" href="https://www.redfin.com/AR/Rogers/912-W-Olive-St" target="_blank" rel="noopener noreferrer" aria-label="Open 912 W Olive St, Rogers on Redfin">912 W Olive St, Rogers<svg class="opp-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg></a></div>
                       <span class="opp-price">$392K</span>
                     </div>
-                    <p class="opp-meta">3 bd / 2 ba · Redfin · Arkansas · Jul 30</p>
+                    <p class="opp-meta">3 bd / 2 ba · 1,650 sqft · Redfin · Arkansas · Jul 30</p>
                     <div class="opp-exec-wrap">
                       <p class="opp-exec">Lower entry than Bentonville; guest score clears the Arkansas floor but isn’t a slam dunk.</p>
                       <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
@@ -2775,7 +2816,7 @@
                 <div class="opp-note" data-note-for="olive"></div>
               </article>
 
-              <article class="opp" data-id="layton" data-digest="arkansas-2026-07-31" data-market="arkansas" data-source="auction" data-active="active" data-score="interesting" data-beds="3" data-baths="2" data-price="335120" data-location="Bentonville" data-composite="64" data-date="2026-07-31">
+              <article class="opp" data-id="layton" data-digest="arkansas-2026-07-31" data-market="arkansas" data-source="auction" data-active="active" data-score="interesting" data-beds="3" data-baths="2" data-price="335120" data-sqft="1500" data-location="Bentonville" data-composite="64" data-date="2026-07-31">
                 <div class="opp-row">
                   <span class="opp-num" aria-hidden="true">7</span>
                   <div class="opp-score" data-bucket="interesting" title="Interesting · composite 64">64</div>
@@ -2784,7 +2825,7 @@
                       <div class="opp-addr-row"><a class="opp-addr" href="https://www.auction.com/details/4305-sw-layton-road-bentonville-ar" target="_blank" rel="noopener noreferrer" aria-label="Open 4305 SW Layton Road, Bentonville on Auction.com">4305 SW Layton Road, Bentonville<svg class="opp-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg></a></div>
                       <span class="opp-price">$335K</span>
                     </div>
-                    <p class="opp-meta">3 bd / 2 ba · Auction.com · Arkansas · Needs price · Jul 31</p>
+                    <p class="opp-meta">3 bd / 2 ba · 1,500 sqft · Auction.com · Arkansas · Needs price · Jul 31</p>
                     <div class="opp-exec-wrap">
                       <p class="opp-exec">Bentonville foreclosure with stress PASS. Confirm hammer + all-in; Analyze needs a price override.</p>
                       <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
@@ -2800,7 +2841,7 @@
                 <div class="opp-note" data-note-for="layton"></div>
               </article>
 
-              <article class="opp" data-id="arrowwood" data-digest="arkansas-2026-07-31" data-market="arkansas" data-source="auction" data-active="active" data-score="interesting" data-beds="3" data-baths="2" data-price="132173" data-location="Siloam Springs" data-composite="64" data-date="2026-07-31">
+              <article class="opp" data-id="arrowwood" data-digest="arkansas-2026-07-31" data-market="arkansas" data-source="auction" data-active="active" data-score="interesting" data-beds="3" data-baths="2" data-price="132173" data-sqft="1400" data-location="Siloam Springs" data-composite="64" data-date="2026-07-31">
                 <div class="opp-row">
                   <span class="opp-num" aria-hidden="true">8</span>
                   <div class="opp-score" data-bucket="interesting" title="Interesting · composite 64">64</div>
@@ -2809,7 +2850,7 @@
                       <div class="opp-addr-row"><a class="opp-addr" href="https://www.auction.com/details/1000-arrowwood-ln-siloam-springs-ar" target="_blank" rel="noopener noreferrer" aria-label="Open 1000 Arrowwood Ln, Siloam Springs on Auction.com">1000 Arrowwood Ln, Siloam Springs<svg class="opp-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg></a></div>
                       <span class="opp-price">$132K</span>
                     </div>
-                    <p class="opp-meta">3 bd / 2 ba · Auction.com · Arkansas · Jul 31</p>
+                    <p class="opp-meta">3 bd / 2 ba · 1,400 sqft · Auction.com · Arkansas · Jul 31</p>
                     <div class="opp-exec-wrap">
                       <p class="opp-exec">Lowest check-size auction. CoC looks great on paper — diligence drive-time vs Bentonville trail demand.</p>
                       <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
@@ -2825,7 +2866,7 @@
                 <div class="opp-note" data-note-for="arrowwood"></div>
               </article>
 
-              <article class="opp" data-id="julletta" data-digest="arkansas-2026-07-31" data-market="arkansas" data-source="auction" data-active="active" data-score="interesting" data-beds="3" data-baths="2" data-price="135634" data-location="Bella Vista" data-composite="64" data-date="2026-07-31">
+              <article class="opp" data-id="julletta" data-digest="arkansas-2026-07-31" data-market="arkansas" data-source="auction" data-active="active" data-score="interesting" data-beds="3" data-baths="2" data-price="135634" data-sqft="1350" data-location="Bella Vista" data-composite="64" data-date="2026-07-31">
                 <div class="opp-row">
                   <span class="opp-num" aria-hidden="true">9</span>
                   <div class="opp-score" data-bucket="interesting" title="Interesting · composite 64">64</div>
@@ -2834,7 +2875,7 @@
                       <div class="opp-addr-row"><a class="opp-addr" href="https://www.auction.com/details/1-julletta-circle-bella-vista-ar" target="_blank" rel="noopener noreferrer" aria-label="Open 1 Julletta Circle, Bella Vista on Auction.com">1 Julletta Circle, Bella Vista<svg class="opp-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg></a></div>
                       <span class="opp-price">$136K</span>
                     </div>
-                    <p class="opp-meta">3 bd / 2 ba · Auction.com · Arkansas · Jul 31</p>
+                    <p class="opp-meta">3 bd / 2 ba · 1,350 sqft · Auction.com · Arkansas · Jul 31</p>
                     <div class="opp-exec-wrap">
                       <p class="opp-exec">Fast cosmetic timeline in Bella Vista. Seasonal demand — haircut occupancy vs Bentonville calibration.</p>
                       <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
@@ -2850,7 +2891,7 @@
                 <div class="opp-note" data-note-for="julletta"></div>
               </article>
 
-              <article class="opp" data-id="cardinal" data-digest="arkansas-2026-07-31" data-market="arkansas" data-source="auction" data-active="active" data-score="interesting" data-beds="3" data-baths="2" data-price="269173" data-location="Springdale" data-composite="64" data-date="2026-07-31">
+              <article class="opp" data-id="cardinal" data-digest="arkansas-2026-07-31" data-market="arkansas" data-source="auction" data-active="active" data-score="interesting" data-beds="3" data-baths="2" data-price="269173" data-sqft="1550" data-location="Springdale" data-composite="64" data-date="2026-07-31">
                 <div class="opp-row">
                   <span class="opp-num" aria-hidden="true">10</span>
                   <div class="opp-score" data-bucket="interesting" title="Interesting · composite 64">64</div>
@@ -2859,7 +2900,7 @@
                       <div class="opp-addr-row"><a class="opp-addr" href="https://www.auction.com/details/2480-cardinal-drive-springdale-ar" target="_blank" rel="noopener noreferrer" aria-label="Open 2480 Cardinal Drive, Springdale on Auction.com">2480 Cardinal Drive, Springdale<svg class="opp-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"/><path d="M10 14L20 4"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/></svg></a></div>
                       <span class="opp-price">$269K</span>
                     </div>
-                    <p class="opp-meta">3 bd / 2 ba · Auction.com · Arkansas · Jul 31</p>
+                    <p class="opp-meta">3 bd / 2 ba · 1,550 sqft · Auction.com · Arkansas · Jul 31</p>
                     <div class="opp-exec-wrap">
                       <p class="opp-exec">Mid-pack auction with decent modeled CoC. Outside core trail premium — stress lower occupancy in Analyze.</p>
                       <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
@@ -2875,7 +2916,7 @@
                 <div class="opp-note" data-note-for="cardinal"></div>
               </article>
 
-              <article class="opp" data-id="emma" data-digest="arkansas-2026-07-28" data-market="arkansas" data-source="mls" data-active="inactive" data-score="pass" data-beds="3" data-baths="2" data-price="310000" data-location="Springdale" data-composite="48" data-date="2026-07-28">
+              <article class="opp" data-id="emma" data-digest="arkansas-2026-07-28" data-market="arkansas" data-source="mls" data-active="inactive" data-score="pass" data-beds="3" data-baths="2" data-price="310000" data-sqft="1480" data-location="Springdale" data-composite="48" data-date="2026-07-28">
                 <div class="opp-row">
                   <span class="opp-num" aria-hidden="true">11</span>
                   <div class="opp-score" data-bucket="pass" title="Pass · composite 48">48</div>
@@ -2884,7 +2925,7 @@
                       <div class="opp-addr-row"><p class="opp-addr is-inactive">512 E Emma Ave, Springdale</p></div>
                       <span class="opp-price">$310K</span>
                     </div>
-                    <p class="opp-meta">3 bd / 2 ba · Redfin · Arkansas · Inactive · Jul 28</p>
+                    <p class="opp-meta">3 bd / 2 ba · 1,480 sqft · Redfin · Arkansas · Inactive · Jul 28</p>
                     <div class="opp-exec-wrap">
                       <p class="opp-exec">Below the buy box and no longer active — useful as a Pass example when filtering the list.</p>
                       <button type="button" class="opp-more" data-toggle-summary hidden>More</button>
@@ -3093,7 +3134,7 @@
 
               <h3>Notes &amp; caveats</h3>
               <ul class="report-list">
-                <li>Revenue uses the <strong>data-backed scenario engine</strong> (tier + benchmarks). No live AirDNA API yet — freshness = last manual refresh.</li>
+                <li>Revenue uses the <strong>data-backed scenario engine</strong> (tier + benchmarks). AirDNA API is parked for now — freshness = last manual refresh.</li>
                 <li>HOA and garage fields are best-effort from the listing page — verify before offer.</li>
                 <li>Resolved via: RentCast + Redfin (mock sample).</li>
               </ul>
@@ -4020,6 +4061,7 @@
         card.setAttribute("data-beds", "0");
         card.setAttribute("data-baths", "0");
         card.setAttribute("data-price", "0");
+        card.setAttribute("data-sqft", "0");
         card.setAttribute("data-location", loc);
         card.setAttribute("data-composite", "-1");
         card.setAttribute("data-date", today);
@@ -4715,26 +4757,61 @@
         setTimeout(function () { toast.classList.remove("show"); }, 2500);
       }
 
+      var AUTH_KEY = "prairie-peak-preview-auth";
+      var NAV_PAGES = ["feed", "opportunities", "analyze", "request-market", "artifacts"];
+      var loginError = document.getElementById("login-error");
+
       function showApp() {
         login.style.display = "none";
         app.style.display = "block";
+        if (loginError) loginError.classList.remove("show");
         restoreSidebarPreference();
         renderRatings();
         renderArtifacts();
         applyFilters();
+        var initial = navFromHash();
+        goNav(initial, { replace: true });
       }
       function showLogin() {
+        try { sessionStorage.removeItem(AUTH_KEY); } catch (e) {}
         app.style.display = "none";
         login.style.display = "grid";
         closePlatformModal();
         closeNav();
-        goNav("feed");
+        var pwd = document.getElementById("pwd");
+        if (pwd) { pwd.value = ""; pwd.focus(); }
+        if (loginError) loginError.classList.remove("show");
+        if (location.hash && location.hash !== "#login") {
+          history.replaceState({ nav: "login" }, "", "#login");
+        }
+      }
+
+      function trySignIn() {
+        var pwd = document.getElementById("pwd");
+        var val = pwd ? String(pwd.value || "").trim() : "";
+        if (!val) {
+          if (loginError) loginError.classList.add("show");
+          if (pwd) pwd.focus();
+          return;
+        }
+        try { sessionStorage.setItem(AUTH_KEY, "1"); } catch (e) {}
+        showApp();
+      }
+
+      function navFromHash() {
+        var h = (location.hash || "").replace(/^#/, "").split("?")[0];
+        if (h === "feedback") h = "feed";
+        if (h === "history") h = "artifacts";
+        if (h === "login" || !h) return "feed";
+        if (NAV_PAGES.indexOf(h) >= 0) return h;
+        return "feed";
       }
 
       function goNav(name, opts) {
         opts = opts || {};
         if (name === "feedback") name = "feed";
         if (name === "history") name = "artifacts";
+        if (NAV_PAGES.indexOf(name) < 0) name = "feed";
         document.querySelectorAll(".nav-btn[data-nav]").forEach(function (b) {
           b.classList.toggle("active", b.getAttribute("data-nav") === name);
         });
@@ -4751,6 +4828,16 @@
         if (name === "artifacts") renderArtifacts();
         if (name === "analyze") updateAddrStatus();
         closeNav();
+
+        if (!opts.fromHistory) {
+          var hash = "#" + name;
+          if (location.hash !== hash) {
+            if (opts.replace) history.replaceState({ nav: name }, "", hash);
+            else history.pushState({ nav: name }, "", hash);
+          } else if (opts.replace) {
+            history.replaceState({ nav: name }, "", hash);
+          }
+        }
       }
 
       function openAnalyze(addr, needs) {
@@ -4794,9 +4881,10 @@
         score: ["strong", "interesting", "pass", "pending"],
         rating: ["unrated", "5", "4", "3", "2", "1"],
         location: ["Centennial", "Littleton", "Bentonville", "Rogers", "Bella Vista", "Springdale", "Siloam Springs"],
-        beds: 0,
-        baths: 0,
-        maxPrice: 1200000,
+        price: { min: 0, max: 1200000 },
+        beds: { min: 0, max: 10 },
+        baths: { min: 0, max: 10 },
+        sqft: { min: 0, max: 8000 },
         sort: "composite-desc",
       };
 
@@ -4862,32 +4950,41 @@
             { value: "Siloam Springs", label: "Siloam Springs" },
           ],
         },
+        price: {
+          label: "Price",
+          type: "minmax",
+          unit: "money",
+          minPlaceholder: "Min $",
+          maxPlaceholder: "Max $",
+          step: 25000,
+          ceiling: 1200000,
+        },
         beds: {
           label: "Beds",
-          type: "single",
-          options: [
-            { value: "0", label: "Any" },
-            { value: "3", label: "3+" },
-            { value: "4", label: "4+" },
-            { value: "5", label: "5+" },
-          ],
+          type: "minmax",
+          unit: "count",
+          minPlaceholder: "Min",
+          maxPlaceholder: "Max",
+          step: 1,
+          ceiling: 10,
         },
         baths: {
           label: "Baths",
-          type: "single",
-          options: [
-            { value: "0", label: "Any" },
-            { value: "2", label: "2+" },
-            { value: "3", label: "3+" },
-            { value: "4", label: "4+" },
-          ],
+          type: "minmax",
+          unit: "count",
+          minPlaceholder: "Min",
+          maxPlaceholder: "Max",
+          step: 1,
+          ceiling: 10,
         },
-        maxPrice: {
-          label: "Max price",
-          type: "range",
-          min: 100000,
-          max: 1200000,
-          step: 25000,
+        sqft: {
+          label: "Sqft",
+          type: "minmax",
+          unit: "sqft",
+          minPlaceholder: "Min",
+          maxPlaceholder: "Max",
+          step: 50,
+          ceiling: 8000,
         },
         sort: {
           label: "Sort",
@@ -4904,9 +5001,13 @@
         },
       };
 
-      var FILTER_ORDER = ["market", "source", "active", "score", "rating", "location", "beds", "baths", "maxPrice", "sort"];
+      var FILTER_ORDER = ["market", "source", "active", "score", "rating", "location", "price", "beds", "baths", "sqft", "sort"];
       var appliedFilters = cloneFilters(FILTER_DEFAULTS);
       var filterToolbar = document.getElementById("filter-toolbar");
+
+      function cloneRange(r) {
+        return { min: Number(r.min) || 0, max: Number(r.max) || 0 };
+      }
 
       function cloneFilters(src) {
         return {
@@ -4916,11 +5017,37 @@
           score: src.score.slice(),
           rating: src.rating.slice(),
           location: src.location.slice(),
-          beds: src.beds,
-          baths: src.baths,
-          maxPrice: src.maxPrice,
+          price: cloneRange(src.price),
+          beds: cloneRange(src.beds),
+          baths: cloneRange(src.baths),
+          sqft: cloneRange(src.sqft),
           sort: src.sort,
         };
+      }
+
+      function parseNumInput(raw, fallback) {
+        if (raw === null || raw === undefined) return fallback;
+        var s = String(raw).trim().replace(/[$,\s]/g, "");
+        if (s === "") return fallback;
+        var n = Number(s);
+        return isFinite(n) ? n : fallback;
+      }
+
+      function formatRangeSummary(key, range) {
+        var meta = FILTER_META[key];
+        var def = FILTER_DEFAULTS[key];
+        var min = Number(range.min) || 0;
+        var max = Number(range.max) || 0;
+        var atDefault = min === def.min && max === def.max;
+        if (atDefault) return "Any";
+        function fmt(n) {
+          if (meta.unit === "money") return money(n);
+          if (meta.unit === "sqft") return n.toLocaleString() + " sf";
+          return String(n);
+        }
+        if (min <= def.min && max < def.max) return "≤ " + fmt(max);
+        if (min > def.min && max >= def.max) return "≥ " + fmt(min);
+        return fmt(min) + "–" + fmt(max);
       }
 
       function arrEq(x, y) {
@@ -4953,9 +5080,9 @@
           if (f[key].length === 1) return optionLabel(key, f[key][0]);
           return f[key].length + " selected";
         }
-        if (key === "beds") return f.beds === 0 ? "Any" : f.beds + "+";
-        if (key === "baths") return f.baths === 0 ? "Any" : f.baths + "+";
-        if (key === "maxPrice") return f.maxPrice >= def.maxPrice ? "Any" : "≤ " + money(f.maxPrice);
+        if (key === "price" || key === "beds" || key === "baths" || key === "sqft") {
+          return formatRangeSummary(key, f[key]);
+        }
         if (key === "sort") {
           var short = {
             "composite-desc": "Score ↓",
@@ -4977,9 +5104,9 @@
         if (key === "market" || key === "source" || key === "active" || key === "score" || key === "rating" || key === "location") {
           return !isFullSelect(f[key], def[key]);
         }
-        if (key === "beds") return f.beds !== def.beds;
-        if (key === "baths") return f.baths !== def.baths;
-        if (key === "maxPrice") return f.maxPrice !== def.maxPrice;
+        if (key === "price" || key === "beds" || key === "baths" || key === "sqft") {
+          return f[key].min !== def[key].min || f[key].max !== def[key].max;
+        }
         if (key === "sort") return f.sort !== def.sort;
         return false;
       }
@@ -5028,6 +5155,17 @@
           var radio = panel.querySelector('input[type="radio"]:checked');
           return radio ? Number(radio.value) : 0;
         }
+        if (meta.type === "minmax") {
+          var minEl = panel.querySelector('[data-mm="min"]');
+          var maxEl = panel.querySelector('[data-mm="max"]');
+          var def = FILTER_DEFAULTS[key];
+          var min = parseNumInput(minEl && minEl.value, def.min);
+          var max = parseNumInput(maxEl && maxEl.value, def.max);
+          if (min < 0) min = 0;
+          if (max < min) max = min;
+          if (max > meta.ceiling) max = meta.ceiling;
+          return { min: min, max: max };
+        }
         if (meta.type === "range") {
           return Number(panel.querySelector('input[type="range"]').value);
         }
@@ -5052,6 +5190,13 @@
           panel.querySelectorAll('input[type="radio"]').forEach(function (el) {
             el.checked = Number(el.value) === Number(applied);
           });
+        } else if (meta.type === "minmax") {
+          var minEl = panel.querySelector('[data-mm="min"]');
+          var maxEl = panel.querySelector('[data-mm="max"]');
+          if (minEl) minEl.value = applied.min > 0 ? String(applied.min) : "";
+          if (maxEl) {
+            maxEl.value = applied.max < meta.ceiling ? String(applied.max) : "";
+          }
         } else if (meta.type === "range") {
           var range = panel.querySelector('input[type="range"]');
           range.value = String(applied);
@@ -5064,14 +5209,18 @@
       function applyOneFilter(key) {
         var draft = readDraftFromPanel(key);
         if (draft === null) return;
-        appliedFilters[key] = Array.isArray(draft) ? draft.slice() : draft;
+        if (Array.isArray(draft)) appliedFilters[key] = draft.slice();
+        else if (draft && typeof draft === "object") appliedFilters[key] = cloneRange(draft);
+        else appliedFilters[key] = draft;
         runFilter(appliedFilters);
         closeAllQuickFilters();
       }
 
       function resetOneFilter(key) {
         var def = FILTER_DEFAULTS[key];
-        appliedFilters[key] = Array.isArray(def) ? def.slice() : def;
+        if (Array.isArray(def)) appliedFilters[key] = def.slice();
+        else if (def && typeof def === "object") appliedFilters[key] = cloneRange(def);
+        else appliedFilters[key] = def;
         syncPanelDraft(key);
         runFilter(appliedFilters);
         closeAllQuickFilters();
@@ -5110,10 +5259,15 @@
               html += '<label class="qf-item"><input type="' + inputType + '" name="' + name + '" value="' + opt.value + '" /> ' + opt.label + "</label>";
             });
             html += "</div>";
+          } else if (meta.type === "minmax") {
+            html += '<div class="qf-body"><div class="qf-minmax">';
+            html += '<div class="field"><label>Min</label><input type="number" data-mm="min" min="0" step="' + meta.step + '" placeholder="' + meta.minPlaceholder + '" inputmode="numeric" /></div>';
+            html += '<div class="field"><label>Max</label><input type="number" data-mm="max" min="0" step="' + meta.step + '" placeholder="' + meta.maxPlaceholder + '" inputmode="numeric" /></div>';
+            html += "</div></div>";
           } else if (meta.type === "range") {
             html += '<div class="qf-body"><div class="qf-range">';
-            html += '<div class="qf-range-val">' + money(FILTER_DEFAULTS.maxPrice) + "</div>";
-            html += '<input type="range" min="' + meta.min + '" max="' + meta.max + '" step="' + meta.step + '" value="' + FILTER_DEFAULTS.maxPrice + '" />';
+            html += '<div class="qf-range-val"></div>';
+            html += '<input type="range" min="' + (meta.min || 0) + '" max="' + (meta.max || 0) + '" step="' + (meta.step || 1) + '" />';
             html += "</div></div>";
           } else if (meta.type === "select") {
             html += '<div class="qf-body"><select>';
@@ -5170,12 +5324,6 @@
             selectAllInPanel(btn.getAttribute("data-select-all"));
           });
         });
-        filterToolbar.querySelectorAll('.qf[data-key="maxPrice"] input[type="range"]').forEach(function (range) {
-          range.addEventListener("input", function () {
-            range.closest(".qf-panel").querySelector(".qf-range-val").textContent = money(Number(range.value));
-          });
-        });
-
         document.getElementById("btn-reset-filters").addEventListener("click", resetFilters);
         updateFilterSummary();
       }
@@ -5198,10 +5346,19 @@
           if (f.source.indexOf(card.dataset.source) < 0) ok = false;
           if (f.active.indexOf(card.dataset.active) < 0) ok = false;
           if (f.score.indexOf(card.dataset.score) < 0) ok = false;
-          if (Number(card.dataset.beds) < f.beds) ok = false;
-          if (Number(card.dataset.baths) < f.baths) ok = false;
           if (f.location.indexOf(card.dataset.location) < 0) ok = false;
-          if (Number(card.dataset.price) > f.maxPrice) ok = false;
+          // Pending shared rows have unknown dims (0) — keep them visible while filtering inventory.
+          var pendingUnknown = card.dataset.shared === "1" && Number(card.dataset.price) === 0;
+          if (!pendingUnknown) {
+            var price = Number(card.dataset.price) || 0;
+            var beds = Number(card.dataset.beds) || 0;
+            var baths = Number(card.dataset.baths) || 0;
+            var sqft = Number(card.dataset.sqft) || 0;
+            if (price < f.price.min || price > f.price.max) ok = false;
+            if (beds < f.beds.min || beds > f.beds.max) ok = false;
+            if (baths < f.baths.min || baths > f.baths.max) ok = false;
+            if (sqft < f.sqft.min || sqft > f.sqft.max) ok = false;
+          }
 
           var r = getRating(card.dataset.id);
           var ratingKey = r === 0 ? "unrated" : String(r);
@@ -5280,9 +5437,13 @@
         if (e.key === "Escape") closeAllQuickFilters();
       });
 
-      document.getElementById("btn-signin").addEventListener("click", showApp);
+      document.getElementById("btn-signin").addEventListener("click", trySignIn);
       document.getElementById("pwd").addEventListener("keydown", function (e) {
-        if (e.key === "Enter") showApp();
+        if (e.key === "Enter") trySignIn();
+      });
+      window.addEventListener("popstate", function () {
+        if (app.style.display === "none") return;
+        goNav(navFromHash(), { fromHistory: true });
       });
       if (btnNavToggle) {
         btnNavToggle.addEventListener("click", function (e) {
@@ -5343,8 +5504,11 @@
         });
       })();
 
-      // Mock wireframe: land in the app with left nav visible (skip login friction).
-      showApp();
+      // Preview auth: require a password once per tab session (any non-empty value).
+      var signedIn = false;
+      try { signedIn = sessionStorage.getItem(AUTH_KEY) === "1"; } catch (e) {}
+      if (signedIn) showApp();
+      else showLogin();
       window.matchMedia("(max-width: 900px)").addEventListener("change", function () {
         setNavOpen(shell.classList.contains("sidebar-open"));
       });
@@ -5429,7 +5593,7 @@
             title: "The full inventory — filter one dimension at a time",
             copy:
               "<p>Sidebar <strong>Opportunities</strong> shows everything scored — not just today’s digest.</p>" +
-              "<p>Open a filter pill, check what you want, then <strong>Apply</strong> that filter alone. Rate listings with stars + a note for the family.</p>",
+              "<p>Open a filter pill — checkboxes for market/source, or <strong>min/max</strong> for price, beds, baths, and sqft — then <strong>Apply</strong> that filter alone. Rate listings with stars + a note for the family.</p>",
             viz:
               '<div class="tour-filter-row">' +
               '<span class="tour-filter-pill"><em>Market</em> All</span>' +
