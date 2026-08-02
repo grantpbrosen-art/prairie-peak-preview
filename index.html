@@ -417,6 +417,8 @@
       border-bottom: 1px solid var(--line);
       background: var(--topbar-bg);
       backdrop-filter: blur(8px);
+      position: relative;
+      z-index: 40; /* above Opportunities filter shelf (open = 20) so Appearance menu isn’t covered */
     }
     .topbar-left {
       min-width: 0;
